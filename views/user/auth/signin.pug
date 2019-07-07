@@ -1,7 +1,7 @@
 doctype html
 html
     head
-        base(href!=baseUrl + 'user/')
+        base(href!=uriRoot)
         meta(charset="utf-8")
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
         meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui")
@@ -20,24 +20,25 @@ html
             .card
                 .card-body
                     h3.text-center.mt-0.m-b-15
-                        a.logo.logo-admin(href="index.html")
+                        a.logo.logo-admin(href!='/')
                             img(src="images/logo.png" height="24" alt="logo")
                     .p-3
-                        form.form-horizontal.m-t-20(action="index.html")
+                        input#baseUrl(type="hidden" value!=baseUrl)
+                        form#signInForm.form-horizontal.m-t-20(action!=baseUrl + "auth/signin")
                             .form-group.row
                                 .col-12
-                                    input.form-control(type="text" required="" placeholder="Username")
+                                    input#email.form-control(type="text" name="email" placeholder="Username")
                             .form-group.row
                                 .col-12
-                                    input.form-control(type="password" required="" placeholder="Password")
+                                    input#password.form-control(type="password" name="password" placeholder="Password")
                             .form-group.row
                                 .col-12
                                     .custom-control.custom-checkbox
-                                        input#customCheck1.custom-control-input(type="checkbox")
-                                        label.custom-control-label(for="customCheck1") Remember me
+                                        input#rememberMe.custom-control-input(type="checkbox" name="rememberMe")
+                                        label.custom-control-label(for="rememberMe") Remember me
                             .form-group.text-center.row.m-t-20
                                 .col-12
-                                    button.btn.btn-danger.btn-block.waves-effect.waves-light(type="submit") Log In
+                                    button#signIn.btn.btn-danger.btn-block.waves-effect.waves-light Sign In
                             .form-group.m-t-10.mb-0.row
                                 .col-sm-7.m-t-20
                                     //a.text-muted(href!="pages-recoverpw.html")
@@ -59,5 +60,8 @@ html
         script(src="js/waves.js")
         script(src="js/jquery.nicescroll.js")
         script(src="js/jquery.scrollTo.min.js")
+        script(src=assetsVendorsRoot + "jquery-validation/jquery.validate.min.js")
+        script(src=assetsVendorsRoot + "jquery-form/jquery.form.min.js")
         // App js
         script(src="js/app.js")
+        script(src="site/auth/signIn.js")

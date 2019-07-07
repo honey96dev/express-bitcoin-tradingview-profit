@@ -1,7 +1,7 @@
 doctype html
 html
     head
-        base(href!=baseUrl + 'user/')
+        base(href!=uriRoot)
         meta(charset="utf-8")
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
         meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui")
@@ -19,29 +19,30 @@ html
             .card
                 .card-body
                     h3.text-center.mt-0.m-b-15
-                        a.logo.logo-admin(href="index.html")
+                        a.logo.logo-admin(href="/")
                             img(src="images/logo.png" height="24" alt="logo")
                     .p-3
-                        form.form-horizontal(action="index.html")
+                        input#baseUrl(type="hidden" value!=baseUrl)
+                        form#signUpForm.form-horizontal(action!=baseUrl + "auth/signup")
                             .form-group.row
                                 .col-12
-                                    input.form-control(type="email" required="" placeholder="Email")
+                                    input.form-control(type="email" name="email" placeholder="Email")
                             .form-group.row
                                 .col-12
-                                    input.form-control(type="text" required="" placeholder="Username")
+                                    input.form-control(type="text" name="username" placeholder="Username")
                             .form-group.row
                                 .col-12
-                                    input.form-control(type="password" required="" placeholder="Password")
+                                    input.form-control(type="password" name="password" placeholder="Password")
                             .form-group.row
                                 .col-12
                                     .custom-control.custom-checkbox
-                                        input#customCheck1.custom-control-input(type="checkbox")
-                                        label.custom-control-label.font-weight-normal(for="customCheck1")
+                                        input#agreeTerm.custom-control-input(type="checkbox" name="agreeTerm")
+                                        label.custom-control-label.font-weight-normal(for="agreeTerm")
                                             | I accept
-                                            a.text-muted(href="#") Terms and Conditions
+                                            a.text-muted()  Terms and Conditions
                             .form-group.text-center.row.m-t-20
                                 .col-12
-                                    button.btn.btn-danger.btn-block.waves-effect.waves-light(type="submit") Register
+                                    button#signUp.btn.btn-danger.btn-block.waves-effect.waves-light Register
                             .form-group.m-t-10.mb-0.row
                                 .col-12.m-t-20.text-center
                                     a.text-muted(href!=baseUrl + 'auth') Already have account?
@@ -57,5 +58,8 @@ html
         script(src="js/waves.js")
         script(src="js/jquery.nicescroll.js")
         script(src="js/jquery.scrollTo.min.js")
+        script(src=assetsVendorsRoot + "jquery-validation/jquery.validate.min.js")
+        script(src=assetsVendorsRoot + "jquery-form/jquery.form.min.js")
         // App js
         script(src="js/app.js")
+        script(src="site/auth/signUp.js")

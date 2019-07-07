@@ -1,6 +1,7 @@
 import express from 'express';
 import config from '../core/config';
 import authRouter from './user/auth';
+import dashboardRouter from './user/dashboardRouter';
 
 const router = express.Router();
 
@@ -24,6 +25,6 @@ function alreadyLogin(req, res, next) {
 }
 
 router.use('/auth', alreadyLogin, authRouter);
-router.use('/', requiresLogin, authRouter);
+router.use('/', requiresLogin, dashboardRouter);
 
 module.exports = router;
