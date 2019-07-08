@@ -26,7 +26,7 @@ const signInProc = (req, res, next) => {
         const rememberMe = !!(params.rememberMe) ? params.rememberMe.trim() : undefined;
         const hash = myCrypto.hmacHex(password);
 
-        let sql = sprintf("SELECT COUNT(`email`) `count` FROM `users` WHERE BINARY `username` = '%s';", username);
+        let sql = sprintf("SELECT COUNT(`id`) `count` FROM `%s` WHERE BINARY `username` = '%s';", dbTblName.users, username);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.log(error);
@@ -42,11 +42,11 @@ const signInProc = (req, res, next) => {
             if (count === 0) {
                 res.status(200).send({
                     result: strings.error,
-                    message: strings.emailIsInvalid,
+                    message: strings.usernameIsInvalid,
                 });
                 return;
             }
-            sql = sprintf("SELECT U.* FROM `users` U WHERE BINARY U.username = '%s' AND BINARY U.password = '%s';", username, hash);
+            sql = sprintf("SELECT U.* FROM `%s` U WHERE BINARY U.username = '%s' AND BINARY U.password = '%s';", dbTblName.users, username, hash);
 
             dbConn.query(sql, null, (error, results, fields) => {
                 if (error) {
@@ -100,7 +100,7 @@ const signUpProc = (req, res, next) => {
         const username = params.username.trim();
         const hash = myCrypto.hmacHex(password);
 
-        let sql = sprintf("SELECT COUNT(`email`) `count` FROM `users` WHERE BINARY `email` = '%s';", email);
+        let sql = sprintf("SELECT COUNT(`id`) `count` FROM `%s` WHERE BINARY `username` = '%s';", dbTblName.users, username);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.log(error);
@@ -116,12 +116,11 @@ const signUpProc = (req, res, next) => {
             if (count > 0) {
                 res.status(200).send({
                     result: strings.error,
-                    message: strings.emailAlreadyRegistered,
+                    message: strings.usernameAlreadyRegistered,
                 });
                 return;
             }
-            sql = sprintf("INSERT INTO `users`(`email`, `username`, `password`, `emailVerified`, `allow`) VALUES('%s', '%s', '%s', '0', '0');",
-                email, username, hash);
+            sql = sprintf("INSERT INTO `%s`(`email`, `username`, `password`, `emailVerified`, `allow`) VALUES('%s', '%s', '%s', '0', '0');", dbTblName.users, email, username, hash);
             dbConn.query(sql, null, (error, results, fields) => {
                 if (error) {
                     console.log(error);

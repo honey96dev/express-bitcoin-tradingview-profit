@@ -41,7 +41,7 @@ const savePropertiesProc = (req, res, next) => {
     const bitmexApikeySecret = params.bitmexApikeySecret;
     let bitmexTestnet = params.bitmexTestnet;
 
-    let sql = sprintf("UPDATE `users` SET `email` = '%s', `bitmexApikey` = '%s', `bitmexApikeySecret` = '%s', `bitmexTestnet` = '%d' WHERE `id` = '%d';", email, bitmexApikey, bitmexApikeySecret, bitmexTestnet, id);
+    let sql = sprintf("UPDATE `%s` SET `email` = '%s', `bitmexApikey` = '%s', `bitmexApikeySecret` = '%s', `bitmexTestnet` = '%d' WHERE `id` = '%d';", dbTblName.users, email, bitmexApikey, bitmexApikeySecret, bitmexTestnet, id);
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
             console.log(error);
@@ -72,7 +72,7 @@ const changePasswordProc = (req, res, next) => {
     const oldHash = myCrypto.hmacHex(oldPassword);
     const hash = myCrypto.hmacHex(password);
 
-    let sql = sprintf("SELECT U.id FROM `users` U WHERE U.id = '%d' AND U.password = '%s';", id, oldHash);
+    let sql = sprintf("SELECT U.id FROM `%s` U WHERE U.id = '%d' AND U.password = '%s';", dbTblName.users, id, oldHash);
     dbConn.query(sql, null, (error, result, fields) => {
         if (error || !result) {
             console.log(error);
@@ -91,7 +91,7 @@ const changePasswordProc = (req, res, next) => {
             });
             return;
         }
-        sql = sprintf("UPDATE `users` SET `password` = '%s' WHERE `id` = '%d';", hash, id);
+        sql = sprintf("UPDATE `%s` SET `password` = '%s' WHERE `id` = '%d';", dbTblName.users, hash, id);
         dbConn.query(sql, null, (error, result, fields) => {
             if (error) {
                 console.log(error);
