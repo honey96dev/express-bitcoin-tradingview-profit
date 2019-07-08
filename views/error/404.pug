@@ -1,0 +1,40 @@
+doctype html
+html
+    head
+        base(href!=uriRoot)
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui")
+        title=title
+        meta(content!=description name="description")
+        meta(content!=author name="author")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        link(rel="shortcut icon" href="images/favicon.ico")
+        link(href="css/bootstrap.min.css" rel="stylesheet" type="text/css")
+        link(href="css/icons.css" rel="stylesheet" type="text/css")
+        link(href="css/style.css" rel="stylesheet" type="text/css")
+    body.fixed-left
+        // Begin page
+        .accountbg
+        .wrapper-page
+            .card
+                .card-block
+                    .ex-page-content.text-center
+                        h1 404!
+                        h3 Sorry, page not found
+                        br
+                        a.btn.btn-danger.mb-5.waves-effect.waves-light(href!=baseUrl) Back
+        // jQuery
+        script(src="js/jquery.min.js")
+        script(src="js/popper.min.js")
+        script(src="js/bootstrap.min.js")
+        script(src="js/modernizr.min.js")
+        script(src="js/detect.js")
+        script(src="js/fastclick.js")
+        script(src="js/jquery.slimscroll.js")
+        script(src="js/jquery.blockUI.js")
+        script(src="js/waves.js")
+        script(src="js/jquery.nicescroll.js")
+        script(src="js/jquery.scrollTo.min.js")
+        // App js
+        script(src="js/app.js")

@@ -20,12 +20,13 @@ const signInProc = (req, res, next) => {
         });
     } else if (method == 'POST') {
         const params = req.body;
-        const email = params.email.trim();
+        const username = params.username.trim();
+        // const email = params.email.trim();
         const password = params.password.trim();
         const rememberMe = !!(params.rememberMe) ? params.rememberMe.trim() : undefined;
         const hash = myCrypto.hmacHex(password);
 
-        let sql = sprintf("SELECT COUNT(`email`) `count` FROM `users` WHERE BINARY `email` = '%s';", email);
+        let sql = sprintf("SELECT COUNT(`email`) `count` FROM `users` WHERE BINARY `username` = '%s';", username);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.log(error);
@@ -45,7 +46,7 @@ const signInProc = (req, res, next) => {
                 });
                 return;
             }
-            sql = sprintf("SELECT U.id, U.email, U.username FROM `users` U WHERE BINARY U.email = '%s' AND BINARY U.password = '%s';", email, hash);
+            sql = sprintf("SELECT U.* FROM `users` U WHERE BINARY U.username = '%s' AND BINARY U.password = '%s';", username, hash);
 
             dbConn.query(sql, null, (error, results, fields) => {
                 if (error) {
@@ -70,12 +71,7 @@ const signInProc = (req, res, next) => {
                     } else {
                         req.sessionOptions.expires = false;
                     }
-                    req.session.user = {
-                        id: results[0].id,
-                        email: results[0].email,
-                        username: results[0].username,
-                        name: results[0].name,
-                    };
+                    req.session.user = results[0];
                     res.status(200).send({
                         result: strings.success,
                         message: strings.successfullySignedIn,

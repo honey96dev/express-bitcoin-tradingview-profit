@@ -1,0 +1,83 @@
+extends ../layout
+
+block mainContent
+    .row
+        .col-md-6.col-xl-3
+            .mini-stat.clearfix.bg-white
+                .row.align-items-center
+                    .col-4
+                        img.rounded-curcle(src="images/coins/btc.png" alt="")
+                    .col-4
+                        h4.counter.text-dark.m-0.pb-1 $ 11852
+                        i.mdi.mdi-arrow-down.text-danger
+                        small.text-danger -5.45%
+                    .col-4
+                        a.btn.btn-success.btn-sm.float-right(href="#") Buy
+                    .col-12
+                        #sparkline0
+        .col-md-6.col-xl-3
+            .mini-stat.clearfix.bg-white
+                .row.align-items-center
+                    .col-4
+                        img.rounded-curcle(src="images/coins/eth.png" alt="")
+                    .col-4
+                        h4.counter.text-dark.m-0.pb-1 $ 956
+                        i.mdi.mdi-arrow-up.text-success
+                        small.text-success +1.45%
+                    .col-4
+                        a.btn.btn-danger.btn-sm.float-right(href="#") Sell
+                    .col-12
+                        #sparkline1
+        .col-md-6.col-xl-3.align-items-center
+            .mini-stat.clearfix.bg-white
+                .row.align-items-center
+                    .col-4
+                        img.rounded-curcle(src="images/coins/dash.png" alt="")
+                    .col-4
+                        h4.counter.text-dark.m-0.pb-1 $ 825
+                        i.mdi.mdi-arrow-down.text-danger
+                        small.text-danger -5.45%
+                    .col-4
+                        a.btn.btn-success.btn-sm.float-right(href="#") Buy
+                    .col-12
+                        #sparkline2
+        .col-md-6.col-xl-3
+            .mini-stat.clearfix.bg-white
+                .row.align-items-center
+                    .col-4
+                        img.rounded-curcle(src="images/coins/lite.png" alt="")
+                    .col-4
+                        h4.counter.text-dark.m-0.pb-1 $ 250
+                        i.mdi.mdi-arrow-up.text-success
+                        small.text-success +1.45%
+                    .col-4
+                        a.btn.btn-danger.btn-sm.float-right(href="#") Sell
+                    .col-12
+                        #sparkline3
+    .row
+        .col-md-12.col-xl-8
+            .card.m-b-30
+                .card-body
+                    h4.mt-0.header-title Balance by Day
+                    #flot-line-chart-moving(style="height: 410px")
+        .col-md-12.col-xl-4
+            .card.m-b-30
+                .card-body
+                    h4.mt-0.header-title Treding BTC
+                    ul.list-inline.widget-chart.m-t-20.text-center
+                        li
+                            h4
+                                b 462
+                                small.font-12 BTC
+                            p.text-muted.m-b-0 Sell
+                        li
+                            h4
+                                b 710
+                                small.font-12 BTC
+                            p.text-muted.m-b-0 Buy
+                        li
+                            h4
+                                b 1172
+                                small.font-12 BTC
+                            p.text-muted.m-b-0 Total
+                    #flot-pie-chart(style="height: 300px")

@@ -7,15 +7,18 @@ function SignIn() {
 SignIn.prototype.init = function() {
     $('#signIn').click(function (e) {
         e.preventDefault();
-        var btn = $(this);
-        var form = $('#signInForm');
+        let btn = $(this);
+        let form = $('#signInForm');
 
         form.validate({
             rules: {
-                email: {
+                username: {
                     required: true,
-                    email: true,
                 },
+                // email: {
+                //     required: true,
+                //     email: true,
+                // },
                 password: {
                     required: true,
                 },

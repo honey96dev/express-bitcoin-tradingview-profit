@@ -6,7 +6,12 @@ module.exports = {
     // successfullyRegistered: 'Successfully registered. Please activate your account by validation email.',
     successfullyRegistered: 'Successfully registered. Please try to sign in.',
     emailIsInvalid: 'Your email is invalid',
-    passwordIsInvalid: 'Your password is invalid',
+    passwordIsInvalid: 'Your password is incorrect',
     successfullySignedIn: 'Successfully signed in',
     successfullySignedOut: 'Successfully signed out',
+    error404: 'Not Fount',
+    error500: 'Unknown server error',
+    successfullySaved: 'Successfully saved',
+    successfullyChanged: 'Successfully changed',
+    currentPasswordIncorrect: 'Current password is incorrect',
 };

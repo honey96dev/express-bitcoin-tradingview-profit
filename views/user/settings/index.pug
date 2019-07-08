@@ -1,0 +1,68 @@
+extends ../layout
+
+block mainContent
+    .row
+        .col-12
+            .card.m-b-30
+                .card-body
+                    h4.mt-0.header-title Account properties
+                    //p.text-muted.m-b-30.font-14
+                    //    | This library allows you to create
+                    //    | editable elements on your page. It can be used with any engine
+                    //    | (bootstrap, jquery-ui, jquery only) and includes both popup and inline
+                    //    | modes. Please try out demo to see how it works.
+                    div#propertiesSec
+                        table.table.table-striped
+                            thead
+                                tr
+                                    th(style="width: 30%;") Property
+                                    th Value
+                            tbody
+                                tr
+                                    td Email
+                                    td
+                                        a#email(href="#" data-type="email" data-pk="1" data-title="Enter email")=data['email']
+                                tr
+                                    td BitMEX Apikey
+                                    td
+                                        a#bitmexApikey(href="#" data-type="text" data-pk="2" data-title="Enter BitMEX Apikey")=data['bitmexApikey']
+                                tr
+                                    td BitMEX Apikey Secret
+                                    td
+                                        a#bitmexApikeySecret(href="#" data-type="text" data-pk="3" data-title="Enter BitMEX Apikey secret")=data['bitmexApikeySecret']
+
+                                tr
+                                    td BitMEX Environment
+                                    td
+                                        //input#bitmexTestnet.custom-control-input(type="checkbox" name="bitmexTestnet" value=data['bitmexTestnet'])
+                                        //label.custom-control-label(for="bitmexTestnet" style="margin-left: 30px;")
+                                        a#bitmexTestnet(href="#" data-type="select" data-pk="4" data-value=data['bitmexTestnet'] data-title="BitMEX Environment")=(data['bitmexTestnet'] == 1 ? 'Testnet' : 'Realnet')
+
+                        button#saveProperty.btn.btn-success.waves-effect.waves-light Save
+            .card.m-b-30
+                .card-body
+                    h4.mt-0.header-title Account password
+                    //p.text-muted.m-b-30.font-14
+                    //    | This library allows you to create
+                    //    | editable elements on your page. It can be used with any engine
+                    //    | (bootstrap, jquery-ui, jquery only) and includes both popup and inline
+                    //    | modes. Please try out demo to see how it works.
+                    form#passwordSec(action='/settings/password' method='POST')
+                        table.table.table-striped
+                            tbody
+                                tr
+                                    td(style="width: 30%;") Current Password
+                                    td
+                                        input#oldPassword.form-control(type="password" name="oldPassword" required)
+                                tr
+                                    td New Password
+                                    td
+                                        input#password.form-control(type="password" name="password" required data-parsley-minlength="6")
+                                tr
+                                    td Confirm
+                                    td
+                                        input#password2.form-control(type="password" name="password2" required data-parsley-equalto="#password")
+
+                        button#changePassword.btn.btn-success.waves-effect.waves-light Change
+        // end col
+    // end row
