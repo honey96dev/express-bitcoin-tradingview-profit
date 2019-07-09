@@ -10,7 +10,7 @@ const router = express.Router();
 const signInProc = (req, res, next) => {
     const method = req.method.toUpperCase();
     if (method == 'GET') {
-        res.render('user/auth/signin', {
+        res.render('admin/auth/signin', {
             baseUrl: server.adminBaseUrl,
             uriRoot: server.adminUriRoot,
             description: server.description,
@@ -26,7 +26,7 @@ const signInProc = (req, res, next) => {
         const rememberMe = !!(params.rememberMe) ? params.rememberMe.trim() : undefined;
         const hash = myCrypto.hmacHex(password);
 
-        let sql = sprintf("SELECT COUNT(`id`) `count` FROM `users` WHERE BINARY `username` = '%s';", username);
+        let sql = sprintf("SELECT COUNT(`id`) `count` FROM `%s` WHERE BINARY `username` = '%s';", dbTblName.admins, username);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.log(error);
@@ -46,7 +46,7 @@ const signInProc = (req, res, next) => {
                 });
                 return;
             }
-            sql = sprintf("SELECT U.* FROM `users` U WHERE BINARY U.username = '%s' AND BINARY U.password = '%s';", username, hash);
+            sql = sprintf("SELECT U.* FROM `%s` U WHERE BINARY U.username = '%s' AND BINARY U.password = '%s';", dbTblName.admins, username, hash);
 
             dbConn.query(sql, null, (error, results, fields) => {
                 if (error) {
@@ -71,7 +71,7 @@ const signInProc = (req, res, next) => {
                     } else {
                         req.sessionOptions.expires = false;
                     }
-                    req.session.user = results[0];
+                    req.session.admin = results[0];
                     res.status(200).send({
                         result: strings.success,
                         message: strings.successfullySignedIn,
@@ -82,76 +82,17 @@ const signInProc = (req, res, next) => {
     }
 };
 
-const signUpProc = (req, res, next) => {
-    const method = req.method.toUpperCase();
-    if (method == 'GET') {
-        res.render('user/auth/signup', {
-            baseUrl: server.adminBaseUrl,
-            uriRoot: server.adminUriRoot,
-            description: server.description,
-            assetsVendorsRoot: server.assetsVendorsRoot,
-            author: server.author,
-            title: 'Sign Up',
-        });
-    } else if (method == 'POST') {
-        const params = req.body;
-        const email = params.email.trim();
-        const password = params.password.trim();
-        const username = params.username.trim();
-        const hash = myCrypto.hmacHex(password);
-
-        let sql = sprintf("SELECT COUNT(`id`) `count` FROM `users` WHERE BINARY `username` = '%s';", username);
-        dbConn.query(sql, null, (error, results, fields) => {
-            if (error) {
-                console.log(error);
-                res.status(200).send({
-                    result: strings.error,
-                    message: strings.unknownServerError,
-                    error: error,
-                });
-                return;
-            }
-            const count = parseInt(results[0].count);
-
-            if (count > 0) {
-                res.status(200).send({
-                    result: strings.error,
-                    message: strings.usernameAlreadyRegistered,
-                });
-                return;
-            }
-            sql = sprintf("INSERT INTO `users`(`email`, `username`, `password`, `emailVerified`, `allow`) VALUES('%s', '%s', '%s', '0', '0');",
-                email, username, hash);
-            dbConn.query(sql, null, (error, results, fields) => {
-                if (error) {
-                    console.log(error);
-                    res.status(200).send({
-                        result: strings.error,
-                        message: strings.unknownServerError,
-                        error: error,
-                    });
-                } else {
-                    res.status(200).send({
-                        result: strings.success,
-                        message: strings.successfullyRegistered,
-                    });
-                }
-            });
-        });
-    }
-};
-
 const signOutProc = (req, res, next) => {
-    req.session.user = undefined;
+    req.session.admin = undefined;
     if (req.xhr) {
         res.status(200).send({
-            baseUrl: server.baseUrl,
+            baseUrl: server.adminBaseUrl,
             result: strings.success,
             message: strings.successfullySignedOut,
         });
     } else {
         // res.redirect(config.server.baseUrl);
-        res.redirect('/');
+        res.redirect('/admin');
     }
 };
 
@@ -159,9 +100,6 @@ router.get('/', signInProc);
 
 router.get('/signin', signInProc);
 router.post('/signin', signInProc);
-
-router.get('/signup', signUpProc);
-router.post('/signup', signUpProc);
 
 router.get('/signout', signOutProc);
 router.post('/signout', signOutProc);

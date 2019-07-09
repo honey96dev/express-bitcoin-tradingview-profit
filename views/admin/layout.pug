@@ -1,0 +1,229 @@
+doctype html
+html
+    head
+        base(href!=uriRoot)
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui")
+        title=title
+        meta(content!=description name="description")
+        meta(content!=author name="author")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        link(rel="shortcut icon" href="images/favicon.ico")
+        link(href="plugins/jvectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet")
+        link(href="css/bootstrap.min.css" rel="stylesheet" type="text/css")
+        link(href="css/icons.css" rel="stylesheet" type="text/css")
+        link(href="css/style.css" rel="stylesheet" type="text/css")
+        for style in styles
+            link(href!=style rel = "stylesheet" type="text/css")
+    body.fixed-left
+        // Loader
+        #preloader
+            #status
+                .spinner
+        // Begin page
+        #wrapper
+            // ========== Left Sidebar Start ==========
+            .left.side-menu
+                button.button-menu-mobile.button-menu-mobile-topbar.open-left.waves-effect(type="button")
+                    i.ion-close
+                // LOGO
+                .topbar-left
+                    .text-center
+                        a.logo(href="/")
+                            i.mdi.mdi-coin
+                            | Admin Panel
+                        // <a href="index.html" class="logo"><img src="images/logo.png" height="24" alt="logo"></a>
+                .sidebar-inner.slimscrollleft
+                    #sidebar-menu
+                        ul
+                            li
+                                a.waves-effect(href!=uriRoot)
+                                    i.mdi.mdi-airplay
+                                    span  Dashboard
+                            li
+                                a.waves-effect(href!=uriRoot + "users")
+                                    i.mdi.mdi-account
+                                    span  Users
+                            li
+                                a.waves-effect(href!=uriRoot + "settings")
+                                    i.mdi.mdi-settings
+                                    span  Settings
+                            li
+                                a.waves-effect(href!=uriRoot + "active-orders")
+                                    i.mdi.mdi-settings
+                                    span  Active Orders
+                    .clearfix
+                // end sidebarinner
+            // Left Sidebar End
+            // Start right Content here
+            .content-page
+                // Start content
+                .content
+                    // Top Bar Start
+                    .topbar
+                        nav.navbar-custom
+                            ul.list-inline.float-right.mb-0
+                                li.list-inline-item.dropdown.notification-list.hide-phone
+                                    //a.nav-link.dropdown-toggle.arrow-none.waves-effect.text-white(data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false")
+                                    //    | English
+                                    //    img.ml-2(src="images/flags/us_flag.jpg" height="16" alt="")
+                                    //.dropdown-menu.dropdown-menu-right.language-switch
+                                    //    a.dropdown-item(href="#")
+                                    //        img(src="images/flags/italy_flag.jpg" alt="" height="16")
+                                    //        span  Italian
+                                    //    a.dropdown-item(href="#")
+                                    //        img(src="images/flags/french_flag.jpg" alt="" height="16")
+                                    //        span  French
+                                    //    a.dropdown-item(href="#")
+                                    //        img(src="images/flags/spain_flag.jpg" alt="" height="16")
+                                    //        span  Spanish
+                                    //    a.dropdown-item(href="#")
+                                    //        img(src="images/flags/russia_flag.jpg" alt="" height="16")
+                                    //        span  Russian
+                                //li.list-inline-item.dropdown.notification-list
+                                //    a.nav-link.dropdown-toggle.arrow-none.waves-effect(data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false")
+                                //        i.ti-email.noti-icon
+                                //        span.badge.badge-danger.noti-icon-badge 5
+                                //    .dropdown-menu.dropdown-menu-right.dropdown-arrow.dropdown-menu-lg
+                                //        // item
+                                //        .dropdown-item.noti-title
+                                //            h5
+                                //                span.badge.badge-danger.float-right 745
+                                //                | Messages
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon
+                                //                img.img-fluid.rounded-circle(src="images/users/avatar-2.jpg" alt="user-img")
+                                //            p.notify-details
+                                //                b Charles M. Jones
+                                //                small.text-muted Dummy text of the printing and typesetting industry.
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon
+                                //                img.img-fluid.rounded-circle(src="images/users/avatar-3.jpg" alt="user-img")
+                                //            p.notify-details
+                                //                b Thomas J. Mimms
+                                //                small.text-muted You have 87 unread messages
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon
+                                //                img.img-fluid.rounded-circle(src="images/users/avatar-4.jpg" alt="user-img")
+                                //            p.notify-details
+                                //                b Luis M. Konrad
+                                //                small.text-muted It is a long established fact that a reader will
+                                //        // All
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            | View All
+                                //li.list-inline-item.dropdown.notification-list
+                                //    a.nav-link.dropdown-toggle.arrow-none.waves-effect(data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false")
+                                //        i.ti-bell.noti-icon
+                                //        span.badge.badge-success.noti-icon-badge 23
+                                //    .dropdown-menu.dropdown-menu-right.dropdown-arrow.dropdown-menu-lg
+                                //        // item
+                                //        .dropdown-item.noti-title
+                                //            h5
+                                //                span.badge.badge-danger.float-right 87
+                                //                | Notification
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon.bg-primary
+                                //                i.mdi.mdi-cart-outline
+                                //            p.notify-details
+                                //                b Your order is placed
+                                //                small.text-muted Dummy text of the printing and typesetting industry.
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon.bg-success
+                                //                i.mdi.mdi-message
+                                //            p.notify-details
+                                //                b New Message received
+                                //                small.text-muted You have 87 unread messages
+                                //        // item
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            .notify-icon.bg-warning
+                                //                i.mdi.mdi-martini
+                                //            p.notify-details
+                                //                b Your item is shipped
+                                //                small.text-muted It is a long established fact that a reader will
+                                //        // All
+                                //        a.dropdown-item.notify-item(href="javascript:void(0);")
+                                //            | View All
+                                li.list-inline-item.dropdown.notification-list
+                                    a.nav-link.dropdown-toggle.arrow-none.waves-effect.nav-user(data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false")
+                                        img.rounded-circle(src="images/users/avatar-1.jpg" alt="user")
+                                    .dropdown-menu.dropdown-menu-right.profile-dropdown
+                                        // item
+                                        .dropdown-item.noti-title
+                                            h5 Welcome
+                                        //a.dropdown-item(href="#")
+                                        //    i.mdi.mdi-account-circle.m-r-5.text-muted
+                                        //    |  Profile
+                                        //a.dropdown-item(href="#")
+                                        //    i.mdi.mdi-wallet.m-r-5.text-muted
+                                        //    |  My Wallet
+                                        a.dropdown-item(href!=uriRoot + "settings")
+                                            //span.badge.badge-success.float-right 5
+                                            i.mdi.mdi-settings.m-r-5.text-muted
+                                            |  Settings
+                                        //a.dropdown-item(href="#")
+                                        //    i.mdi.mdi-lock-open-outline.m-r-5.text-muted
+                                        //    |  Lock screen
+                                        .dropdown-divider
+                                        a.dropdown-item(href!=uriRoot + "auth/signout")
+                                            i.mdi.mdi-logout.m-r-5.text-muted
+                                            |  Sign out
+                            ul.list-inline.menu-left.mb-0
+                                li.float-left
+                                    button.button-menu-mobile.open-left.waves-light.waves-effect
+                                        i.mdi.mdi-menu
+                                //li.hide-phone.app-search
+                                //    form(role="search")
+                                //        input.form-control(type="text" placeholder="Search...")
+                                //        a(href="")
+                                //            i.fa.fa-search
+                            .clearfix
+                    // Top Bar End
+                    .page-content-wrapper
+                        .container-fluid
+                            .row
+                                .col-sm-12
+                                    .page-title-box
+                                        //.btn-group.float-right
+                                        //    ol.breadcrumb.hide-phone.p-0.m-0
+                                        //        li.breadcrumb-item
+                                        //            a(href="#") Annex
+                                        //        li.breadcrumb-item.active Dashboard
+                                        h4.page-title=title
+                            // end page title end breadcrumb
+                            block mainContent
+                        // container
+                    // Page content Wrapper
+                // content
+                footer.footer
+                    //| © 2018 Annex by Mannatthemes.
+            // End Right content here
+        // END wrapper
+        // jQuery
+        script(src="js/jquery.min.js" type="text/javascript")
+        script(src="js/popper.min.js" type="text/javascript")
+        script(src="js/bootstrap.min.js" type="text/javascript")
+        script(src="js/modernizr.min.js" type="text/javascript")
+        script(src="js/detect.js" type="text/javascript")
+        script(src="js/fastclick.js" type="text/javascript")
+        script(src="js/jquery.slimscroll.js" type="text/javascript")
+        script(src="js/jquery.blockUI.js" type="text/javascript")
+        script(src="js/waves.js" type="text/javascript")
+        script(src="js/jquery.nicescroll.js" type="text/javascript")
+        script(src="js/jquery.scrollTo.min.js" type="text/javascript")
+
+        // App js
+        script(src="js/app.js" type="text/javascript")
+        script.
+            $(document).ready(function() {
+                $("#boxscroll").niceScroll({cursorborder:"",cursorcolor:"#cecece",boxzoom:true});
+                $("#boxscroll2").niceScroll({cursorborder:"",cursorcolor:"#cecece",boxzoom:true});
+            });
+
+        for script in scripts
+            script(src!=script, type="text/javascript")

@@ -120,7 +120,9 @@ const signUpProc = (req, res, next) => {
                 });
                 return;
             }
-            sql = sprintf("INSERT INTO `%s`(`email`, `username`, `password`, `emailVerified`, `allow`) VALUES('%s', '%s', '%s', '0', '0');", dbTblName.users, email, username, hash);
+            let today = new Date();
+            today = sprintf('%04d-%02d-%02d', today.getFullYear(), today.getMonth() + 1, today.getDate());
+            sql = sprintf("INSERT INTO `%s`(`email`, `username`, `password`, `signedUpDate`, `emailVerified`, `allow`) VALUES('%s', '%s', '%s', '%s', '0', '0');", dbTblName.users, email, username, hash, today);
             dbConn.query(sql, null, (error, results, fields) => {
                 if (error) {
                     console.log(error);
@@ -144,7 +146,7 @@ const signOutProc = (req, res, next) => {
     req.session.user = undefined;
     if (req.xhr) {
         res.status(200).send({
-            baseUrl: server.baseUrl,
+            baseUrl: server.userBaseUrl,
             result: strings.success,
             message: strings.successfullySignedOut,
         });

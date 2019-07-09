@@ -19,7 +19,7 @@ const indexProc = (req, res, next) => {
         server.assetsVendorsRoot + "jquery-form/jquery.form.min.js",
         'site/settings/index.js',
     ];
-    console.log(req.session.user);
+
     res.render('user/settings/index', {
         baseUrl: server.userBaseUrl,
         uriRoot: server.userUriRoot,

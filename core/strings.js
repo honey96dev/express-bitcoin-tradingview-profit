@@ -16,4 +16,5 @@ module.exports = {
     successfullySaved: 'Successfully saved',
     successfullyChanged: 'Successfully changed',
     currentPasswordIncorrect: 'Current password is incorrect',
+    successfullyDeleted: 'Successfully Deleted',
 };

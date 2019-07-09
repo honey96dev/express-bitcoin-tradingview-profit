@@ -1,0 +1,124 @@
+extends ../layout
+
+block mainContent
+    input#uriRoot(type="hidden" value!= uriRoot)
+    .row
+        .col-lg-12.col-sm-12
+            .card.m-b-30
+                .card-body.table-responsive
+                    h5.header-title= title
+                        |  Table
+                    //p.text-muted
+                    //    | DataTables has most features enabled by default, so all you need to do to use it with your own ables is to call the construction function:
+                    //    code $().DataTable();
+                    //    |  and border bottom.
+                    div
+                        table#usersTable.table
+                            thead
+                                tr
+                                    th No.
+                                    th Email
+                                    th Username
+                                    th Registered Date
+                                    th Active Trading
+                                    th Total Profit
+                                    th
+                                    th
+                            tbody
+                            tfoot
+                                tr
+                                    th No.
+                                    th Email
+                                    th Username
+                                    th Registered Date
+                                    th Active Trading
+                                    th Total Profit
+                                    th
+                                    th
+
+    #editUserModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+        .modal-dialog.modal-dialog-centered(role='document')
+            .modal-content
+                .modal-header
+                    h5#editUserModalTitle.modal-title Edit User
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                #editUserModalBody.modal-body
+                    h4.mt-0.header-title User Information
+                    form#editUserForm(action!=uriRoot + 'users/edit')
+                        input#editUserId(type="hidden" name="id")
+                        table.table.table-striped
+                            tbody
+                                tr
+                                    td(style="width: 30%;") Username
+                                    td
+                                        input#editUserUsername.form-control(type="text" name="username" required)
+                                tr
+                                    td Email
+                                    td
+                                        input#editUserEmail.form-control(type="email" name="email" required)
+                                tr
+                                    td Active Trading
+                                    td
+                                        select#activeTrading.form-control(name='activeTrading')
+                                            option(value='1') Yes
+                                            option(value='0') No
+
+                                            //.form-group.row.active-trading-row
+                                        //    .form-check-inline
+                                        //        .custom-control.custom-radio
+                                        //            input#activeTrading1.custom-control-input(type='radio' name='activeTrading' value='1')
+                                        //            label.custom-control-label(for='activeTrading1') Yes
+                                        //    .form-check-inline
+                                        //        .custom-control.custom-radio
+                                        //            input#activeTrading2.custom-control-input(type='radio' name='activeTrading' value='0')
+                                        //            label.custom-control-label(for='activeTrading2') No
+                    .modal-footer
+                        button#editUserButton.btn.btn-primary(type='button') Edit
+                    h4.mt-0.header-title Password
+                    form#changePasswordForm(action!=uriRoot + 'users/password')
+                        input#changePasswordId(type="hidden" name="id")
+                        table.table.table-striped
+                            tbody
+                                tr
+                                    td(style="width: 30%;") Current Password
+                                    td
+                                        input#oldPassword.form-control(type="password" name="oldPassword" required)
+                                tr
+                                    td New Password
+                                    td
+                                        input#password.form-control(type="password" name="password" required data-parsley-minlength="6")
+                                tr
+                                    td Confirm
+                                    td
+                                        input#password2.form-control(type="password" name="password2" required data-parsley-equalto="#password")
+                    .modal-footer
+                        button#changePasswordButton.btn.btn-primary(type='button') Change
+
+    #deleteUserModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+        .modal-dialog.modal-dialog-centered(role='document')
+            form#deleteUserForm.modal-content(action!=uriRoot + 'users/delete')
+                .modal-header
+                    h5#deleteUserTitle.modal-title Delete User
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    p Do you want to delete this user?
+                    p#deleteUserEmail
+                    p#deleteUserUsername
+                    input#deleteUserId(type="hidden" name="id")
+                .modal-footer
+                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+                    button#deleteUserButton.btn.btn-danger(type='button') Delete
+
+    #alertModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+        .modal-dialog.modal-dialog-centered(role='document')
+            .modal-content
+                .modal-header
+                    h5#alertTitle.modal-title Delete User
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    p#alertMessage
+                .modal-footer
+                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close
