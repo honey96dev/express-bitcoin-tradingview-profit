@@ -205,6 +205,9 @@ Users.prototype.editUser = function (row) {
     $('#password').val('');
     $('#password2').val('');
 
+    $('#editUserForm').find('.alert').remove();
+    $('#changePasswordForm').find('.alert').remove();
+
     $('#editUserModal').modal('show');
 };
 
