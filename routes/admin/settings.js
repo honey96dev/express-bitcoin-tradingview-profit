@@ -26,22 +26,22 @@ const indexProc = (req, res, next) => {
         let properties = {};
         if (!error) {
             for (let row of result) {
-
+                properties[row.property] = row.value;
             }
         }
+        res.render('admin/settings/index', {
+            baseUrl: server.adminBaseUrl,
+            uriRoot: server.adminUriRoot,
+            description: server.description,
+            assetsVendorsRoot: server.assetsVendorsRoot,
+            author: server.author,
+            title: 'Settings',
+            styles,
+            scripts,
+            data: properties,
+        });
     });
 
-    res.render('admin/settings/index', {
-        baseUrl: server.adminBaseUrl,
-        uriRoot: server.adminUriRoot,
-        description: server.description,
-        assetsVendorsRoot: server.assetsVendorsRoot,
-        author: server.author,
-        title: 'Settings',
-        styles,
-        scripts,
-        data: req.session.admin,
-    });
 };
 
 const savePropertiesProc = (req, res, next) => {

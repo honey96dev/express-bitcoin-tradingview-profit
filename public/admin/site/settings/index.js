@@ -13,48 +13,43 @@ Settings.prototype.init = function() {
     //inline
 
 
-    $('#email').editable({
-        validate: function (value) {
-            value = $.trim(value);
-            if (value == '') return 'This field is required';
-            if (!self.isValidEmail(value)) return 'Invalid email';
-        },
-        type: 'email',
+    $('#walletPercent').editable({
+        // validate: function (value) {
+        //     value = $.trim(value);
+        //     if (value == '') return 'This field is required';
+        //     if (!self.isValidEmail(value)) return 'Invalid email';
+        // },
+        type: 'number',
         pk: 1,
-        name: 'email',
-        title: 'Enter email',
+        name: 'walletPercent',
+        title: '% of wallet amount to use',
         mode: 'inline',
         inputclass: 'form-control-sm',
     });
 
-    $('#bitmexApikey').editable({
-        type: 'text',
+    $('#profitPerTrade').editable({
+        type: 'number',
         pk: 2,
-        name: 'bitmexApikey',
-        title: 'Enter BitMEX Apikey',
+        name: 'profitPerTrade',
+        title: '% of profit per trade',
         mode: 'inline',
-        inputclass: 'input-xxlarge',
+        inputclass: 'form-control-sm',
     });
 
-    $('#bitmexApikeySecret').editable({
+    $('#percentStopLoss').editable({
         type: 'text',
         pk: 3,
-        name: 'bitmexApikeySecret',
-        title: 'Enter BitMEX Apikey Secret',
+        name: 'percentStopLoss',
+        title: '% of stop loss',
         mode: 'inline',
-        inputclass: 'input-xxlarge',
+        inputclass: 'form-control-sm',
     });
 
-    $('#bitmexTestnet').editable({
-        source: [
-            {value: 1, text: 'Testnet'},
-            {value: 0, text: 'Realnet'},
-            // {value: 1, text: 'Testnet'},
-            // {value: 0, text: 'Realnet'},
-        ],
+    $('#percentTakeProfit').editable({
+        type: 'text',
         pk: 4,
-        name: 'bitmexTestnet',
-        title: 'BitMEX Environment',
+        name: 'percentTakeProfit',
+        title: '% of take profit',
         mode: 'inline',
         inputclass: 'form-control-sm',
     });
@@ -102,47 +97,6 @@ Settings.prototype.init = function() {
         })
 
     });
-
-    // $('#passwordSec').parsley();
-
-    $('#changePassword').click(function (e) {
-        e.preventDefault();
-        const btn = $(this);
-        const form = $('#passwordSec');
-
-        form.parsley().validate();
-        if (!form.parsley().isValid()) {
-            return;
-        }
-        // console.log('success');
-        $('#passwordSec').ajaxSubmit({
-            url: '/settings/password',
-            method: 'POST',
-            success: function (response, status, xhr, $form) {
-                const result = response.result;
-                const message = response.message;
-                btn.attr('disabled', false);
-                if (result === 'success') {
-                    instance.showErrorMsg(form, 'success', message);
-                } else if (result === 'error') {
-                    instance.showErrorMsg(form, 'danger', message);
-                }
-            },
-            error: function (error) {
-                instance.showErrorMsg(form, 'danger', 'Unknown server error');
-                btn.attr('disabled', false);
-            },
-        });
-    })
-};
-
-Settings.prototype.isValidEmail = (email) => {
-    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/igm;
-    if (email.length == 0 || !re.test(email)) {
-        return false;
-    } else {
-        return true;
-    }
 };
 
 Settings.prototype.showErrorMsg = function (section, type, msg) {

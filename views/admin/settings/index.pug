@@ -21,19 +21,19 @@ block mainContent
                                 tr
                                     td % of wallet amount to use
                                     td
-                                        a#wallet(href="#" data-type="email" data-pk="1" data-title="Enter email")=data['email']
+                                        a#walletPercent(href="#" data-type="email" data-pk="1" data-title="% of wallet amount to use")=data['walletPercent']
                                 tr
                                     td % of profit per trade
                                     td
-                                        a#email(href="#" data-type="email" data-pk="1" data-title="Enter email")=data['email']
+                                        a#profitPerTrade(href="#" data-type="email" data-pk="2" data-title="% of profit per trade")=data['profitPerTrade']
                                 tr
                                     td % of stop loss
                                     td
-                                        a#bitmexApikey(href="#" data-type="text" data-pk="2" data-title="Enter BitMEX Apikey")=data['bitmexApikey']
+                                        a#percentStopLoss(href="#" data-type="text" data-pk="3" data-title="% of stop loss")=data['percentStopLoss']
                                 tr
                                     td % of take profit
                                     td
-                                        a#bitmexApikeySecret(href="#" data-type="text" data-pk="3" data-title="Enter BitMEX Apikey secret")=data['bitmexApikeySecret']
+                                        a#percentTakeProfit(href="#" data-type="text" data-pk="4" data-title="percentTakeProfit")=data['percentTakeProfit']
 
                         button#saveProperty.btn.btn-success.waves-effect.waves-light Save
 
