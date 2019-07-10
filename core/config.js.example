@@ -8,6 +8,7 @@ module.exports = {
         userUriRoot: '/user/',
         adminBaseUrl: 'http://127.0.0.1:3000/admin/',
         adminUriRoot: '/admin/',
+        assetsVendorsRoot: '/vendors/',
         name: 'Bitmex-Profit',
         description: 'BitMEX Profit',
         author: 'Zhenlong J.',
@@ -15,6 +16,7 @@ module.exports = {
         sslKey: './sslcert/localhost.key',
         sslCert: './sslcert/localhost.cert',
         sslCA: './sslcert/alphasslrootcabundle.crt',
+        environment: 'development',
     },
     mysql: {
         connectionLimit: 10,
@@ -39,8 +41,8 @@ module.exports = {
     },
     dbTblName: {
         admins: 'admins',
-        propietarios: 'users',
-        documentos: 'documentos',
+        users: 'users',
+        bitmex_settings: 'bitmex_settings',
         tokens: 'tokens',
     },
 };
