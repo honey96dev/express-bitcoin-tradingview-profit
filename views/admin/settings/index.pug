@@ -1,0 +1,41 @@
+extends ../layout
+
+block mainContent
+    .row
+        .col-12
+            .card.m-b-30
+                .card-body
+                    //h4.mt-0.header-title Account properties
+                    //p.text-muted.m-b-30.font-14
+                    //    | This library allows you to create
+                    //    | editable elements on your page. It can be used with any engine
+                    //    | (bootstrap, jquery-ui, jquery only) and includes both popup and inline
+                    //    | modes. Please try out demo to see how it works.
+                    div#propertiesSec
+                        table.table.table-striped
+                            thead
+                                tr
+                                    th Property
+                                    th Value
+                            tbody
+                                tr
+                                    td % of wallet amount to use
+                                    td
+                                        a#wallet(href="#" data-type="email" data-pk="1" data-title="Enter email")=data['email']
+                                tr
+                                    td % of profit per trade
+                                    td
+                                        a#email(href="#" data-type="email" data-pk="1" data-title="Enter email")=data['email']
+                                tr
+                                    td % of stop loss
+                                    td
+                                        a#bitmexApikey(href="#" data-type="text" data-pk="2" data-title="Enter BitMEX Apikey")=data['bitmexApikey']
+                                tr
+                                    td % of take profit
+                                    td
+                                        a#bitmexApikeySecret(href="#" data-type="text" data-pk="3" data-title="Enter BitMEX Apikey secret")=data['bitmexApikeySecret']
+
+                        button#saveProperty.btn.btn-success.waves-effect.waves-light Save
+
+        // end col
+    // end row

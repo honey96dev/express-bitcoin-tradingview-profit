@@ -4,6 +4,7 @@ import strings from '../core/strings';
 import authRouter from './admin/auth';
 import dashboardRouter from './admin/dashboard';
 import usersRouter from './admin/users';
+import settingsRouter from './admin/settings';
 
 const router = express.Router();
 
@@ -28,7 +29,9 @@ function alreadyLogin(req, res, next) {
 
 router.use('/auth', alreadyLogin, authRouter);
 router.use('/', requiresLogin, dashboardRouter);
+router.use('/dashboard', requiresLogin, dashboardRouter);
 router.use('/users', requiresLogin, usersRouter);
+router.use('/settings', requiresLogin, settingsRouter);
 
 router.use(function (req, res, next) {
     res.status(404);

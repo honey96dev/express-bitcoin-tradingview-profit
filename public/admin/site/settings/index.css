@@ -1,0 +1,17 @@
+
+
+@media (min-width: 1280px) {
+    .input-xxlarge {
+        width: 600px !important;
+    }
+}
+@media (min-width: 1024px) {
+    .input-xxlarge {
+        width: 500px !important;
+    }
+}
+@media (min-width: 768px) {
+    .input-xxlarge {
+        width: 400px !important;
+    }
+}

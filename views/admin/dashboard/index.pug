@@ -1,83 +1,79 @@
 extends ../layout
 
 block mainContent
+    input#uriRoot(type="hidden" value!= uriRoot)
     .row
-        .col-md-6.col-xl-3
-            .mini-stat.clearfix.bg-white
-                .row.align-items-center
-                    .col-4
-                        img.rounded-curcle(src="images/coins/btc.png" alt="")
-                    .col-4
-                        h4.counter.text-dark.m-0.pb-1 $ 11852
-                        i.mdi.mdi-arrow-down.text-danger
-                        small.text-danger -5.45%
-                    .col-4
-                        a.btn.btn-success.btn-sm.float-right(href="#") Buy
-                    .col-12
-                        #sparkline0
-        .col-md-6.col-xl-3
-            .mini-stat.clearfix.bg-white
-                .row.align-items-center
-                    .col-4
-                        img.rounded-curcle(src="images/coins/eth.png" alt="")
-                    .col-4
-                        h4.counter.text-dark.m-0.pb-1 $ 956
-                        i.mdi.mdi-arrow-up.text-success
-                        small.text-success +1.45%
-                    .col-4
-                        a.btn.btn-danger.btn-sm.float-right(href="#") Sell
-                    .col-12
-                        #sparkline1
-        .col-md-6.col-xl-3.align-items-center
-            .mini-stat.clearfix.bg-white
-                .row.align-items-center
-                    .col-4
-                        img.rounded-curcle(src="images/coins/dash.png" alt="")
-                    .col-4
-                        h4.counter.text-dark.m-0.pb-1 $ 825
-                        i.mdi.mdi-arrow-down.text-danger
-                        small.text-danger -5.45%
-                    .col-4
-                        a.btn.btn-success.btn-sm.float-right(href="#") Buy
-                    .col-12
-                        #sparkline2
-        .col-md-6.col-xl-3
-            .mini-stat.clearfix.bg-white
-                .row.align-items-center
-                    .col-4
-                        img.rounded-curcle(src="images/coins/lite.png" alt="")
-                    .col-4
-                        h4.counter.text-dark.m-0.pb-1 $ 250
-                        i.mdi.mdi-arrow-up.text-success
-                        small.text-success +1.45%
-                    .col-4
-                        a.btn.btn-danger.btn-sm.float-right(href="#") Sell
-                    .col-12
-                        #sparkline3
-    .row
-        .col-md-12.col-xl-8
+        .col-md-6.col-lg-6.col-xl-3
             .card.m-b-30
-                .card-body
-                    h4.mt-0.header-title Balance by Day
-                    #flot-line-chart-moving(style="height: 410px")
-        .col-md-12.col-xl-4
+                .card-body.table-responsive
+                    //h5.header-title New Users Today
+                    h5.header-title.row
+                        i.header-title-icon.round.header-title-icon-users.fa.fa-users
+                        div.property
+                            p New Users
+                            p#newUsers.value N/A
+        .col-md-6.col-lg-6.col-xl-3
             .card.m-b-30
-                .card-body
-                    h4.mt-0.header-title Treding BTC
-                    ul.list-inline.widget-chart.m-t-20.text-center
-                        li
-                            h4
-                                b 462
-                                small.font-12 BTC
-                            p.text-muted.m-b-0 Sell
-                        li
-                            h4
-                                b 710
-                                small.font-12 BTC
-                            p.text-muted.m-b-0 Buy
-                        li
-                            h4
-                                b 1172
-                                small.font-12 BTC
-                            p.text-muted.m-b-0 Total
-                    #flot-pie-chart(style="height: 300px")
+                .card-body.table-responsive
+                    //h5.header-title New Users Today
+                    h5.header-title.row
+                        i.header-title-icon.round.header-title-icon-bots.fa.fa-robot
+                        div.property
+                            p Active Bots
+                            p#activeBots.value N/A
+        .col-md-6.col-lg-6.col-xl-3
+            .card.m-b-30
+                .card-body.table-responsive
+                    //h5.header-title New Users Today
+                    h5.header-title.row
+                        i.header-title-icon.round.header-title-icon-profit.fa.fa-dollar
+                        div.property
+                            p Daily Profit
+                            p#dailyProfit.value N/A
+        .col-md-6.col-lg-6.col-xl-3
+            .card.m-b-30
+                .card-body.table-responsive
+                    //h5.header-title New Users Today
+                    h5.header-title.row
+                        i.header-title-icon.round.header-title-icon-trading.fa.fa-exchange-alt
+                        div.property
+                            p Daily Trades
+                            p#dailyTrades.value N/A
+                    ////p.text-muted
+                    ////    | DataTables has most features enabled by default, so all you need to do to use it with your own ables is to call the construction function:
+                    ////    code $().DataTable();
+                    ////    |  and border bottom.
+                    //div
+                    //    table#newUsersTable.table
+                    //        thead
+                    //            tr
+                    //                th No.
+                    //                th Email
+                    //                th Username
+                    //        tbody
+                    //        tfoot
+                    //            tr
+                    //                th No.
+                    //                th Email
+                    //                th Username
+        .col-md-12.col-lg-12
+            .card.m-b-30
+                .card-body.table-responsive
+                    h5.header-title Total Users
+                    //p.text-muted
+                    //    | DataTables has most features enabled by default, so all you need to do to use it with your own ables is to call the construction function:
+                    //    code $().DataTable();
+                    //    |  and border bottom.
+                    div
+                        table#usersTable.table
+                            thead
+                                tr
+                                    th No.
+                                    th Email
+                                    th Username
+                            tbody
+                            tfoot
+                                tr
+                                    th No.
+                                    th Email
+                                    th Username

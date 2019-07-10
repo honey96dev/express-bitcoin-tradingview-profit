@@ -13,9 +13,9 @@ Users.prototype.init = function () {
         ajax: self.uriRoot + 'users/list',
         columns: [
             {
-                // width: '3%',
+                width: '30',
                 data: null,
-                className: 'details-control',
+                className: 'text-right',
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 },

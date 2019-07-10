@@ -40,7 +40,19 @@ const indexProc = (req, res, next) => {
 };
 
 const listProc = (req, res, next) => {
-    let sql = sprintf("SELECT * FROM `%s`;", dbTblName.users);
+    const params = req.query;
+    let date = params.date;
+    const getToday = params.getToday;
+    if (!!getToday) {
+        date = new Date();
+        date = sprintf("%04d-%02d-%02d", date.getFullYear(), date.getMonth() + 1, date.getDate());
+    }
+    let sql;
+    if (!!date) {
+        sql = sprintf("SELECT * FROM `%s` WHERE `signedUpDate` = '%s';", dbTblName.users, date);
+    } else {
+        sql = sprintf("SELECT * FROM `%s`;", dbTblName.users);
+    }
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
             console.log(error);

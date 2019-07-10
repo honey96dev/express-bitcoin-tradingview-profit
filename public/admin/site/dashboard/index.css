@@ -1,0 +1,52 @@
+.card-body {
+    padding: 1rem !important;
+}
+
+.header-title {
+    margin: 0 0 0 0;
+}
+
+.header-title>i {
+    margin-right: 10px !important;
+}
+
+.header-title>div.property {
+    margin-top: 10px !important;
+}
+
+.header-title>div.property>p {
+    margin: 0 0 0 0 !important;
+}
+
+.header-title>div.property>p.value {
+    /*font-weight: 300;*/
+    /*font-size: 24px;*/
+    color: #707070 !important;
+    font: lighter 24px Rubik !important;
+}
+
+.header-title-icon {
+    padding: 12px 0 0 0;
+    text-align: center;
+    font-size: 30px;
+}
+
+.header-title-icon-users {
+    /*background-color: #40a4f1;*/
+    color: #40a4f1;
+}
+
+.header-title-icon-bots {
+    /*background-color: #3cab94;*/
+    color: #3cab94;
+}
+
+.header-title-icon-profit {
+    /*background-color: #f7931a;*/
+    color: #f7931a;
+}
+
+.header-title-icon-trading {
+    /*background-color: #5b6be8;*/
+    color: #5b6be8;
+}

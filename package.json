@@ -22,6 +22,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "mysql2": "^1.6.5",
+    "numeral": "^2.0.6",
     "pug": "2.0.0-beta11",
     "sprintf-js": "^1.1.2"
   },

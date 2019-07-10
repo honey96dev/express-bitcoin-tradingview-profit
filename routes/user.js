@@ -29,6 +29,7 @@ function alreadyLogin(req, res, next) {
 
 router.use('/auth', alreadyLogin, authRouter);
 router.use('/', requiresLogin, dashboardRouter);
+router.use('/dashboard', requiresLogin, dashboardRouter);
 router.use('/settings', requiresLogin, settingsRouter);
 
 router.use(function (req, res, next) {
