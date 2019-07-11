@@ -198,8 +198,8 @@ let service = {
     },
 
     initFromDb: (tableName, callback) => {
-        let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A where id = 1;", tableName);
-        // let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A;", tableName);
+        // let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A where id = 1;", tableName);
+        let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A;", tableName);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.error('initFromDb', error);
