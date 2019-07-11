@@ -195,8 +195,8 @@ let service = {
     },
 
     initFromDb: (tableName, callback) => {
-        // let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A where id = 1;", tableName);
-        let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A;", tableName);
+        let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A where id = 1;", tableName);
+        // let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A;", tableName);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.error('initFromDb', error);
@@ -273,40 +273,6 @@ let service = {
         if (action === 'partial') {
             service.orders.set(account.id, data);
         } else if (action === 'insert') {
-            // const rest = account.rest;
-            // if (account.isParent) {
-            //     for (let account1 of service.accounts) {
-            //         if (account1.isParent) continue;
-            //
-            //         const headers = {
-            //             'content-type': 'application/json',
-            //             'Accept': 'application/json',
-            //             'X-Requested-With': 'XMLHttpRequest',
-            //             'testnet': account1.testnet,
-            //             'apikeyid': account1.apiKeyID,
-            //             'apikeysecret': account1.apiKeySecret,
-            //         };
-            //         let body;
-            //         for (let item of data) {
-            //             body = {
-            //                 order: item,
-            //                 isClone: true,
-            //             };
-            //             if (!body || _.isEmpty(body)) body = '';
-            //             else if (_.isObject(body)) body = JSON.stringify(body);
-            //             console.log('clone to', account1.id, body);
-            //
-            //             const requestOptions = {
-            //                 headers: headers,
-            //                 url: config.server.baseUrl + 'rest/order',
-            //                 method: POST,
-            //                 body: body
-            //             };
-            //             request(requestOptions);
-            //         }
-            //     }
-            // }
-
             let orders = service.orders.get(account.id);
             for (let item of data) {
                 let flag = true;
@@ -321,94 +287,6 @@ let service = {
                 }
             }
         } else if (action === 'update') {
-            // const rest = account.rest;
-            // if (account.isParent) {
-            //     for (let account1 of service.accounts) {
-            //         if (account1.isParent) continue;
-            //
-            //         const headers = {
-            //             'content-type': 'application/json',
-            //             'Accept': 'application/json',
-            //             'X-Requested-With': 'XMLHttpRequest',
-            //             'testnet': account1.testnet,
-            //             'apikeyid': account1.apiKeyID,
-            //             'apikeysecret': account1.apiKeySecret,
-            //         };
-            //         let body;
-            //         for (let item of data) {
-            //             if (typeof item.ordStatus !== 'undefined' && item.ordStatus === 'Canceled') {
-            //                 body = {
-            //                     order: item,
-            //                     isClone: true,
-            //                 };
-            //                 if (!body || _.isEmpty(body)) body = '';
-            //                 else if (_.isObject(body)) body = JSON.stringify(body);
-            //                 console.log('clone to', account1.id, body);
-            //
-            //                 const requestOptions = {
-            //                     headers: headers,
-            //                     url: config.server.baseUrl + 'rest/order',
-            //                     method: DELETE,
-            //                     body: body
-            //                 };
-            //                 request(requestOptions);
-            //             } else if (typeof item.orderQty !== 'undefined') {
-            //                 body = {
-            //                     orderID: item.orderID,
-            //                     orderQty: item.orderQty,
-            //                     isClone: true,
-            //                 };
-            //                 if (!body || _.isEmpty(body)) body = '';
-            //                 else if (_.isObject(body)) body = JSON.stringify(body);
-            //                 console.log('clone to', account1.id, body);
-            //
-            //                 const requestOptions = {
-            //                     headers: headers,
-            //                     url: config.server.baseUrl + 'rest/order',
-            //                     method: PUT,
-            //                     body: body
-            //                 };
-            //                 request(requestOptions);
-            //             } else if (typeof item.price !== 'undefined') {
-            //                 body = {
-            //                     orderID: item.orderID,
-            //                     price: item.price,
-            //                     isClone: true,
-            //                 };
-            //                 if (!body || _.isEmpty(body)) body = '';
-            //                 else if (_.isObject(body)) body = JSON.stringify(body);
-            //                 console.log('clone to', account1.id, body);
-            //
-            //                 const requestOptions = {
-            //                     headers: headers,
-            //                     url: config.server.baseUrl + 'rest/order',
-            //                     method: PUT,
-            //                     body: body
-            //                 };
-            //                 request(requestOptions);
-            //             } else if (typeof item.stopPx !== 'undefined' || typeof item.pegOffsetValue !== 'undefined') {
-            //                 body = {
-            //                     orderID: item.orderID,
-            //                     stopPx: item.stopPx,
-            //                     pegOffsetValue: item.pegOffsetValue,
-            //                     isClone: true,
-            //                 };
-            //                 if (!body || _.isEmpty(body)) body = '';
-            //                 else if (_.isObject(body)) body = JSON.stringify(body);
-            //                 console.log('clone to', account1.id, body);
-            //
-            //                 const requestOptions = {
-            //                     headers: headers,
-            //                     url: config.server.baseUrl + 'rest/order',
-            //                     method: PUT,
-            //                     body: body
-            //                 };
-            //                 request(requestOptions);
-            //             }
-            //         }
-            //     }
-            // }
-
             let orders = service.orders.get(account.id);
             let idx;
             const cnt = orders.length - 1;
@@ -434,7 +312,7 @@ let service = {
         }
 
         if (!!service.ioClient && service.ioClient.connected) {
-            // console.log(service.orders);
+            // console.log('emit-orders', service.orders);
             service.ioClient.emit('orders', map_to_json(service.orders));
         }
     },
@@ -476,48 +354,9 @@ let service = {
                     position[key] = value;
                     //use key and value here
                 });
-                // if (typeof position.get(item.symbol) === 'undefined') {
-                //     position.set(item.symbol, new Map());
-                // }
-                // position = service.positions.get(item.account).get(item.symbol);
-                // position
+
                 service.positions.get(item.account).set(item.symbol, position);
             }
-
-            // if (account.isParent) {
-            //     for (let account1 of service.accounts) {
-            //         if (account1.isParent) continue;
-            //
-            //         const headers = {
-            //             'content-type': 'application/json',
-            //             'Accept': 'application/json',
-            //             'X-Requested-With': 'XMLHttpRequest',
-            //             'testnet': account1.testnet,
-            //             'apikeyid': account1.apiKeyID,
-            //             'apikeysecret': account1.apiKeySecret,
-            //         };
-            //         let body;
-            //         for (let item of data) {
-            //             if (!!item.leverage) {
-            //                 body = {
-            //                     symbol: item.symbol,
-            //                     leverage: !!item.crossMargin ? 0 : item.leverage,
-            //                 };
-            //                 if (!body || _.isEmpty(body)) body = '';
-            //                 else if (_.isObject(body)) body = JSON.stringify(body);
-            //                 console.log('clone to', account1.id, body);
-            //
-            //                 const requestOptions = {
-            //                     headers: headers,
-            //                     url: config.server.baseUrl + 'rest/positionLeverage',
-            //                     method: POST,
-            //                     body: body
-            //                 };
-            //                 request(requestOptions);
-            //             }
-            //         }
-            //     }
-            // }
         }
 
         if (!!service.ioClient && service.ioClient.connected) {

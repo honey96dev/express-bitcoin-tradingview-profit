@@ -155,6 +155,7 @@ let service = {
                 for (let item of service.ordersClientSockets) {
                     clientIds.push(item.id);
                 }
+                // console.log('orders', data);
                 // console.log('service.ordersClientSockets', clientIds);
                 service.orders = JSON.parse(data);
                 for (let client of service.ordersClientSockets) {

@@ -35,14 +35,15 @@ ActiveOrders.prototype.init = function() {
             {
                 data: "remainingQty",
                 render: $.fn.dataTable.render.number(',', '.', 2, ''),
-            }, {
-                data: "orderValue",
-                render: $.fn.dataTable.render.number(',', '.', 4, ''),
             },
-            {
-                data: "fillPrice",
-                render: $.fn.dataTable.render.number(',', '.', 2, ''),
-            },
+            // {
+            //     data: "orderValue",
+            //     render: $.fn.dataTable.render.number(',', '.', 4, ''),
+            // },
+            // {
+            //     data: "fillPrice",
+            //     render: $.fn.dataTable.render.number(',', '.', 2, ''),
+            // },
             {
                 data: "ordType",
             },
@@ -76,7 +77,7 @@ ActiveOrders.prototype.init = function() {
     self.socket.on('connect', () => {
         // console.log('socket-io', 'connect');
         if (!!self.accountId) {
-            // self.socket.emit('requestAccounts', JSON.stringify([self.accountId]));
+            self.socket.emit('requestAccounts', JSON.stringify([self.accountId]));
             // self.socket.emit('positions??');
             self.socket.emit('orders??');
 
@@ -86,7 +87,7 @@ ActiveOrders.prototype.init = function() {
     });
 
     self.socket.on('orders', (data) => {
-        console.log('socket-io', 'orders', data);let newData = [];
+        let newData = [];
         Object.entries(data).forEach(entry => {
             let key = entry[0];
             let value = entry[1];
@@ -124,6 +125,7 @@ ActiveOrders.prototype.init = function() {
     $('#accountId').on('change', function () {
         self.accountId = $(this).val();
         if (!!self.accountId) {
+            self.socket.emit('requestAccounts', JSON.stringify([self.accountId]));
             self.socket.emit('orders??');
             self.socket.emit('orders?');
         }

@@ -17,7 +17,7 @@ if (cluster.isWorker) {
     BitMEXService.initSocketIOClient();
 
     BitMEXService.initFromDb(config.dbTblName.users, () => {
-        // BitMEXService.wsOrderBookL2_25('*');
+        BitMEXService.wsOrderBookL2_25('*');
         BitMEXService.wsOrder('*');
         // BitMEXService.wsExecution('*');
         // BitMEXService.wsPosition('*');
