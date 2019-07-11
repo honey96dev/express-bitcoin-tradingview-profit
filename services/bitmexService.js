@@ -97,14 +97,14 @@ let service = {
             return;
         }
         const wsUrl = Boolean(account.testnet) ? 'wss://testnet.bitmex.com/realtime' : 'wss://www.bitmex.com/realtime';
+        if (account.apiKeyID.length === 0 || account.apiKeySecret.length === 0) {
+            return;
+        }
         let socket = new WebSocket(wsUrl, {
             retryCount: 2, // default is 2
             reconnectInterval: 1 // default is 5
         });
         console.warn('renewSocket', account.id, account.testnet, account.apiKeyID, account.apiKeySecret, wsUrl);
-        if (account.apiKeyID.length === 0 || account.apiKeySecret.length === 0) {
-            return;
-        }
 
         socket.on('connect', () => {
             account.rest.getTimestamp((result) => {
