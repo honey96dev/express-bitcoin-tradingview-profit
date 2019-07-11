@@ -5,6 +5,7 @@ import authRouter from './admin/auth';
 import dashboardRouter from './admin/dashboard';
 import usersRouter from './admin/users';
 import settingsRouter from './admin/settings';
+import activeOrdersRouter from './admin/activeOrders';
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.use('/', requiresLogin, dashboardRouter);
 router.use('/dashboard', requiresLogin, dashboardRouter);
 router.use('/users', requiresLogin, usersRouter);
 router.use('/settings', requiresLogin, settingsRouter);
+router.use('/active-orders', requiresLogin, activeOrdersRouter);
 
 router.use(function (req, res, next) {
     res.status(404);

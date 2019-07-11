@@ -3,20 +3,14 @@ import app from '../app';
 import debugLib from 'debug';
 import http from 'http';
 import cluster from 'cluster';
+import SocketIO from 'socket.io';
+import SocketIOServerService from '../services/socketIOServerService';
 import config from '../core/config';
 
-const debug = new debugLib('bitmex-profit:server');
+let debug;
+let server;
+let io;
 
-
-/**
- * Create HTTP server.
- */
-
-const server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
 if (cluster.isMaster) {
     cluster.fork();
     cluster.on('exit', function(worker, code, signal) {
@@ -25,7 +19,21 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-    app.set('port', config.server.port);
+    debug = new debugLib('bitmex-profit:server');
+    server = http.createServer(app);
+    const port = normalizePort(process.env.PORT || config.server.port);
+    app.set('port', port);
+
+    io = SocketIO(server, {
+        // path: config.server.adminUriRoot,
+        serveClient: false,
+        // below are engine.IO options
+        // pingInterval: 10000,
+        // pingTimeout: 5000,
+        cookie: false,
+    });
+    SocketIOServerService.initSocketIOServer(io);
+
     server.listen(config.server.port);
     server.on('error', onError);
     server.on('listening', onListening);

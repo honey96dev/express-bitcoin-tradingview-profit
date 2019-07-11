@@ -1,6 +1,7 @@
 extends ../layout
 
 block mainContent
+    input#uriRoot(type="hidden" value!= uriRoot)
     .row
         .col-12
             .card.m-b-30
@@ -15,25 +16,25 @@ block mainContent
                         table.table.table-striped
                             thead
                                 tr
-                                    th Property
+                                    th(style="width: 50%;") Property
                                     th Value
                             tbody
                                 tr
                                     td % of wallet amount to use
                                     td
-                                        a#walletPercent(href="#" data-type="email" data-pk="1" data-title="% of wallet amount to use")=data['walletPercent']
+                                        a#percentWallet(href="#" data-type="number" data-pk="1" data-title="% of wallet amount to use")=data['percentWallet']
                                 tr
                                     td % of profit per trade
                                     td
-                                        a#profitPerTrade(href="#" data-type="email" data-pk="2" data-title="% of profit per trade")=data['profitPerTrade']
+                                        a#profitPerTrade(href="#" data-type="number" data-pk="2" data-title="% of profit per trade")=data['profitPerTrade']
                                 tr
                                     td % of stop loss
                                     td
-                                        a#percentStopLoss(href="#" data-type="text" data-pk="3" data-title="% of stop loss")=data['percentStopLoss']
+                                        a#percentStopLoss(href="#" data-type="number" data-pk="3" data-title="% of stop loss")=data['percentStopLoss']
                                 tr
                                     td % of take profit
                                     td
-                                        a#percentTakeProfit(href="#" data-type="text" data-pk="4" data-title="percentTakeProfit")=data['percentTakeProfit']
+                                        a#percentTakeProfit(href="#" data-type="number" data-pk="4" data-title="percentTakeProfit")=data['percentTakeProfit']
 
                         button#saveProperty.btn.btn-success.waves-effect.waves-light Save
 

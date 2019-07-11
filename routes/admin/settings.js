@@ -46,14 +46,17 @@ const indexProc = (req, res, next) => {
 
 const savePropertiesProc = (req, res, next) => {
     const params = req.body;
-    const id = req.session.user.id;
-    const email = params.email;
-    const bitmexApikey = params.bitmexApikey;
-    const bitmexApikeySecret = params.bitmexApikeySecret;
-    let bitmexTestnet = params.bitmexTestnet;
+    const data = JSON.parse(params.data);
 
-    let sql = sprintf("UPDATE `%s` SET `email` = '%s', `bitmexApikey` = '%s', `bitmexApikeySecret` = '%s', `bitmexTestnet` = '%d' WHERE `id` = '%d';", dbTblName.users, email, bitmexApikey, bitmexApikeySecret, bitmexTestnet, id);
-    dbConn.query(sql, null, (error, result, fields) => {
+    let settings = [];
+    Object.entries(data).forEach((entry) => {
+        settings.push(entry);
+    });
+
+    let sql = sprintf("INSERT INTO `%s` VALUES ? ON DUPLICATE KEY UPDATE `property` = VALUES(`property`), `value` = VALUES(`value`);", dbTblName.bitmex_settings);
+    console.log(sql, settings);
+    // let sql = "INSERT INTO `bitmex_settings` VALUES ? ON DUPLICATE KEY UPDATE `property` = VALUES(`property`), `value` = VALUES(`value`);";
+    dbConn.query(sql, [settings], (error, result, fields) => {
         if (error) {
             console.log(error);
             res.status(200).send({
@@ -64,10 +67,6 @@ const savePropertiesProc = (req, res, next) => {
             return;
         }
 
-        req.session.user.email = email;
-        req.session.user.bitmexApikey = bitmexApikey;
-        req.session.user.bitmexApikeySecret = bitmexApikeySecret;
-        req.session.user.bitmexTestnet = bitmexTestnet;
         res.status(200).send({
             result: strings.success,
             message: strings.successfullySaved,

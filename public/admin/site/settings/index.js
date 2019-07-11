@@ -6,28 +6,31 @@ function Settings() {
 
 Settings.prototype.init = function() {
     const self = this;
-    //modify buttons style
+    self.uriRoot = $('#uriRoot').val();
+
     $.fn.editableform.buttons =
         '<button type="submit" class="btn btn-success editable-submit btn-sm waves-effect waves-light"><i class="mdi mdi-check"></i></button>' +
         '<button type="button" class="btn btn-danger editable-cancel btn-sm waves-effect waves-light"><i class="mdi mdi-close"></i></button>';
     //inline
 
-
-    $('#walletPercent').editable({
-        // validate: function (value) {
-        //     value = $.trim(value);
-        //     if (value == '') return 'This field is required';
-        //     if (!self.isValidEmail(value)) return 'Invalid email';
-        // },
+    $('#percentWallet').editable({
+        validate: function (value) {
+            value = parseInt($.trim(value));
+            if (value < 0 || value > 100) return 'Please input a number between 0~100';
+        },
         type: 'number',
         pk: 1,
-        name: 'walletPercent',
+        name: 'percentWallet',
         title: '% of wallet amount to use',
         mode: 'inline',
         inputclass: 'form-control-sm',
     });
 
     $('#profitPerTrade').editable({
+        validate: function (value) {
+            value = parseInt($.trim(value));
+            if (value < 0 || value > 100) return 'Please input a number between 0~100';
+        },
         type: 'number',
         pk: 2,
         name: 'profitPerTrade',
@@ -37,6 +40,10 @@ Settings.prototype.init = function() {
     });
 
     $('#percentStopLoss').editable({
+        validate: function (value) {
+            value = parseInt($.trim(value));
+            if (value < 0 || value > 100) return 'Please input a number between 0~100';
+        },
         type: 'text',
         pk: 3,
         name: 'percentStopLoss',
@@ -46,6 +53,10 @@ Settings.prototype.init = function() {
     });
 
     $('#percentTakeProfit').editable({
+        validate: function (value) {
+            value = parseInt($.trim(value));
+            if (value < 0 || value > 100) return 'Please input a number between 0~100';
+        },
         type: 'text',
         pk: 4,
         name: 'percentTakeProfit',
@@ -58,25 +69,31 @@ Settings.prototype.init = function() {
         let btn = $(this);
         let section = $('#propertiesSec');
 
-        let email = $('#email').html();
-        let bitmexApikey = $('#bitmexApikey').html();
-        let bitmexApikeySecret = $('#bitmexApikeySecret').html();
-        let bitmexTestnet = $('#bitmexTestnet').html();
-        bitmexApikey = bitmexApikey == 'Empty' ? '' : bitmexApikey;
-        bitmexApikeySecret = bitmexApikeySecret == 'Empty' ? '' : bitmexApikeySecret;
-        bitmexTestnet = bitmexTestnet == 'Testnet' ? 1 : 0;
-        console.log(email, bitmexApikey, bitmexApikeySecret, bitmexTestnet);
+        let percentWallet = $('#percentWallet').html();
+        let profitPerTrade = $('#profitPerTrade').html();
+        let percentStopLoss = $('#percentStopLoss').html();
+        let percentTakeProfit = $('#percentTakeProfit').html();
+
+        percentWallet = percentWallet == 'Empty' ? 0 : percentWallet;
+        profitPerTrade = profitPerTrade == 'Empty' ? 0 : profitPerTrade;
+        percentStopLoss = percentStopLoss == 'Empty' ? 0 : percentStopLoss;
+        percentTakeProfit = percentTakeProfit == 'Empty' ? 0 : percentTakeProfit;
+        // bitmexApikeySecret = bitmexApikeySecret == 'Empty' ? '' : bitmexApikeySecret;
+        // bitmexTestnet = bitmexTestnet == 'Testnet' ? 1 : 0;
+        // console.log(email, bitmexApikey, bitmexApikeySecret, bitmexTestnet);
 
         btn.attr('disabled', true);
-
+        let data = {
+            percentWallet: percentWallet,
+            profitPerTrade: profitPerTrade,
+            percentStopLoss: percentStopLoss,
+            percentTakeProfit: percentTakeProfit,
+        };
         $.ajax({
-            url: '/settings/properties',
+            url: self.uriRoot + 'settings/properties',
             method: 'POST',
             data: {
-                email,
-                bitmexApikey,
-                bitmexApikeySecret,
-                bitmexTestnet,
+                data: JSON.stringify(data),
             },
             dataType: 'json',
             success: function (response, status, xhr, $form) {
@@ -84,7 +101,7 @@ Settings.prototype.init = function() {
                 const message = response.message;
                 btn.attr('disabled', false);
                 if (result === 'success') {
-                    $('#email,#bitmexApikey,#bitmexApikeySecret,#bitmexTestnet').removeClass('editable-unsaved');
+                    $('#propertiesSec a').removeClass('editable-unsaved');
                     instance.showErrorMsg(section, 'success', message);
                 } else if (result === 'error') {
                     instance.showErrorMsg(section, 'danger', message);

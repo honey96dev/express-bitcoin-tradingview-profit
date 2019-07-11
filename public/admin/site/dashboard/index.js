@@ -96,10 +96,10 @@ function Dashboard() {
                 className: "text-center",
             },
         ],
-        language: {
-            search: "",
-            sLengthMenu: "_MENU_",
-        },
+        // language: {
+        //     search: "",
+        //     sLengthMenu: "_MENU_",
+        // },
     });
 };
 
