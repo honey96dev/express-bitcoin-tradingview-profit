@@ -133,7 +133,7 @@ Settings.prototype.init = function() {
                 btn.attr('disabled', false);
             },
         });
-    })
+    });
 };
 
 Settings.prototype.isValidEmail = (email) => {

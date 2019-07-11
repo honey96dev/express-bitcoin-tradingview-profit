@@ -51,6 +51,7 @@ let service = {
         });
         service.ioClient.on('connect', () => {
             console.log('socket-io', 'connect');
+            service.ioClient.emit('bitmexService');
             service.ioClient.emit('wallets', map_to_json(service.wallets));
             service.ioClient.emit('positions', map_to_json(service.positions));
             service.ioClient.emit('orders', map_to_json(service.orders));
@@ -69,6 +70,21 @@ let service = {
         });
         service.ioClient.on('alive', (data) => {
             console.log('socket-io', 'alive', data);
+        });
+        service.ioClient.on('restartBitmex', (data) => {
+            console.log('restartBitmex');
+            service.initFromDb(config.dbTblName.users, (results) => {
+                service.wsOrderBookL2_25('*');
+                service.wsOrder('*');
+                // // BitMEXService.wsExecution('*');
+                // // BitMEXService.wsPosition('*');
+                // // BitMEXService.wsWallet('*');
+                // // BitMEXService.restPosition(GET, {}, (data) => {
+                // //     console.log('restPosition', JSON.stringify(data));
+                // // }, (error) => {
+                // //     console.warn('restPosition', JSON.stringify(error));
+                // // });
+            });
         });
 
         // setInterval(() => {
@@ -173,6 +189,9 @@ let service = {
 
     init: (configs) => {
         for (let account of service.accounts) {
+            if (account.renewSocketTimeoutId) {
+                clearTimeout(account.renewSocketTimeoutId);
+            }
             delete account.rest;
             account.socket.destroy();
             delete account.socket;
@@ -197,15 +216,20 @@ let service = {
         }
     },
 
-    initFromDb: (tableName, callback) => {
+    initFromDb: (tableName, onFullfiled, onRejected) => {
         // let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A where id = 1;", tableName);
         let sql = sprintfJs.sprintf("SELECT A.* FROM `%s` A;", tableName);
         dbConn.query(sql, null, (error, results, fields) => {
             if (error) {
                 console.error('initFromDb', error);
+                if (typeof onRejected === 'function') {
+                    onRejected(error);
+                }
             } else {
                 service.init(results);
-                callback(results);
+                if (typeof onFullfiled === 'function') {
+                    onFullfiled(results);
+                }
             }
         });
 
@@ -385,5 +409,9 @@ let service = {
             service.ioClient.emit('wallets', map_to_json(service.wallets));
         }
     },
+
+    // onSIORestart: () => {
+    //
+    // }
 };
 module.exports = {BitMEXService: service, GET, POST, PUT, DELETE};

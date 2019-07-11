@@ -14,6 +14,7 @@ let service = {
     walletsClientSockets: [],
     positionsClientSockets: [],
     ordersClientSockets: [],
+    bitmexSocket: undefined,
 
     initSocketIOServer: (ioServer) => {
         service.ioServer = ioServer;
@@ -30,6 +31,10 @@ let service = {
             socket.on('alive?', (data) => {
                 socket.emit('alive', socket.id);
                 console.log('alive?', socket.id, data);
+            });
+
+            socket.on('bitmexService', (data) => {
+                service.bitmexSocket = socket;
             });
 
             socket.on('requestAccounts', (data) => {
@@ -206,6 +211,10 @@ let service = {
                         console.log(data);
                     });
                 });
+            });
+
+            socket.on('restartBitmex', (data) => {
+                service.bitmexSocket.emit('restartBitmex');
             });
         });
     },

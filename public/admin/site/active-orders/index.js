@@ -16,6 +16,7 @@ ActiveOrders.prototype.init = function() {
         columns: [
             {
                 data: "side",
+                orderable: false,
             },
             {
                 data: "symbol",
@@ -52,6 +53,9 @@ ActiveOrders.prototype.init = function() {
             },
             {
                 data: "time",
+                // render: function (data, type, row, meta) {
+                //     return meta.row + 1;
+                // },
             },
         ],
         order: [],
@@ -96,7 +100,10 @@ ActiveOrders.prototype.init = function() {
 
         let orders = [];
         let order;
+        let time;
         for (let item of newData) {
+            time = new Date(item.timestamp);
+            time = sprintf("%02d/%02d/%04d %02d:%02d", time.getMonth() + 1, time.getDate(), time.getFullYear(), time.getHours(), time.getMinutes());
             order = {
                 side: item.side,
                 symbol: item.symbol,
@@ -110,7 +117,7 @@ ActiveOrders.prototype.init = function() {
                 fillPrice: 0,
                 ordType: item.ordType,
                 ordStatus: item.ordStatus,
-                time: item.timestamp,
+                time: time,
                 orderID: item.orderID,
             };
             orders.push(order);

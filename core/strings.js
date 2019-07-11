@@ -17,4 +17,5 @@ module.exports = {
     successfullyChanged: 'Successfully changed',
     currentPasswordIncorrect: 'Current password is incorrect',
     successfullyDeleted: 'Successfully Deleted',
+    allBotsAreRestarted: 'All bots are restarted',
 };

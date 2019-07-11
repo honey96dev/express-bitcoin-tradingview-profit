@@ -43,7 +43,7 @@ function Dashboard() {
     });
     $.ajax({
         method: 'GET',
-        url: self.uriRoot + 'dashboard/activeBots',
+        url: self.uriRoot + 'dashboard/active-bots',
         dataType: 'json',
         success: function (res) {
             $('#activeBots').html(res.data.length);
@@ -54,7 +54,7 @@ function Dashboard() {
     });
     $.ajax({
         method: 'GET',
-        url: self.uriRoot + 'dashboard/dailyProfit',
+        url: self.uriRoot + 'dashboard/daily-profit',
         dataType: 'json',
         success: function (res) {
             $('#dailyProfit').html(res.data);
@@ -65,7 +65,7 @@ function Dashboard() {
     });
     $.ajax({
         method: 'GET',
-        url: self.uriRoot + 'dashboard/dailyTrades',
+        url: self.uriRoot + 'dashboard/daily-trades',
         dataType: 'json',
         success: function (res) {
             $('#dailyTrades').html(res.data);

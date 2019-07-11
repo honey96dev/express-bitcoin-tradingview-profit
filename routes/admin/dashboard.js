@@ -77,8 +77,8 @@ const dailyTradesProc = (req, res, next) => {
 };
 
 router.get('/', indexProc);
-router.get('/activeBots', activeBotsProc);
-router.get('/dailyProfit', dailyProfitProc);
-router.get('/dailyTrades', dailyTradesProc);
+router.get('/active-bots', activeBotsProc);
+router.get('/daily-profit', dailyProfitProc);
+router.get('/daily-trades', dailyTradesProc);
 
 module.exports = router;

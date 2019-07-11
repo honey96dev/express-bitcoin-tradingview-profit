@@ -114,6 +114,69 @@ Settings.prototype.init = function() {
         })
 
     });
+
+    $('#restartBots').click(function () {
+        let section = $('#restartBotsModalBody');
+        section.find('.alert').remove();
+
+        $('#restartBotsModal').modal('show');
+    });
+
+    $('#restartBotsButton').click(function () {
+        let btn = $(this);
+        let section = $('#restartBotsModalBody');
+        btn.attr('disabled', true);
+        $.ajax({
+            url: self.uriRoot + 'settings/restart-bots',
+            method: 'POST',
+            dataType: 'json',
+            success: function (response, status, xhr, $form) {
+                const result = response.result;
+                const message = response.message;
+                btn.attr('disabled', false);
+                if (result === 'success') {
+                    instance.showErrorMsg(section, 'success', message);
+                } else if (result === 'error') {
+                    instance.showErrorMsg(section, 'danger', message);
+                }
+            },
+            error: function (error) {
+                instance.showErrorMsg(section, 'danger', 'Unknown server error');
+                btn.attr('disabled', false);
+            },
+        });
+    });
+
+
+    $('#changePassword').click(function (e) {
+        e.preventDefault();
+        const btn = $(this);
+        const form = $('#passwordSec');
+
+        form.parsley().validate();
+        if (!form.parsley().isValid()) {
+            return;
+        }
+        // console.log('success');
+        $('#passwordSec').ajaxSubmit({
+            url: self.uriRoot + 'settings/password',
+            method: 'POST',
+            success: function (response, status, xhr, $form) {
+                const result = response.result;
+                const message = response.message;
+                btn.attr('disabled', false);
+                if (result === 'success') {
+                    instance.showErrorMsg(form, 'success', message);
+                } else if (result === 'error') {
+                    instance.showErrorMsg(form, 'danger', message);
+                }
+            },
+            error: function (error) {
+                instance.showErrorMsg(form, 'danger', 'Unknown server error');
+                btn.attr('disabled', false);
+            },
+        });
+    });
 };
 
 Settings.prototype.showErrorMsg = function (section, type, msg) {

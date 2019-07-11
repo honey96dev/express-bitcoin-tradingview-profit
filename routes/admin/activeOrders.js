@@ -25,6 +25,7 @@ const indexProc = (req, res, next) => {
         'plugins/datatables/dataTables.responsive.min.js',
         'plugins/datatables/responsive.bootstrap4.min.js',
         server.assetsVendorsRoot + 'socket.io/socket.io.js',
+        server.assetsVendorsRoot + 'sprintf.js/sprintf.min.js',
         'site/active-orders/index.js',
     ];
     let sql = sprintf("SELECT * FROM `%s`;", dbTblName.users);
