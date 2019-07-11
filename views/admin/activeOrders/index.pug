@@ -18,7 +18,7 @@ block mainContent
                             for user in users
                                 option(value=user['id'])=user['username'] + " - " + user['email']
                     div
-                        table#table.table
+                        table#table.table.table-striped.dataTable(cellspacing=0)
                             thead
                                 tr
                                     th Side
