@@ -102,6 +102,9 @@ let service = {
             reconnectInterval: 1 // default is 5
         });
         console.warn('renewSocket', account.id, account.testnet, account.apiKeyID, account.apiKeySecret, wsUrl);
+        if (account.apiKeyID.length === 0 || account.apiKeySecret.length === 0) {
+            return;
+        }
 
         socket.on('connect', () => {
             account.rest.getTimestamp((result) => {
