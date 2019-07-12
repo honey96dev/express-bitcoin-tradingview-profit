@@ -1,0 +1,13 @@
+[Unit]
+Description=Bitmex Profit
+After=network.target
+Documentation=https://docs.bitmex-profit.org/manual
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/var/node_web/bitmex_profit
+ExecStart=/usr/bin/node bin/start-webapp
+
+[Install]
+WantedBy=multi-user.target

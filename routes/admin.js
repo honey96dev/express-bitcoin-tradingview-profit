@@ -1,6 +1,7 @@
 import express from 'express';
 import config, {server} from '../core/config';
 import strings from '../core/strings';
+import autoviewRouter from './admin/autoview';
 import authRouter from './admin/auth';
 import dashboardRouter from './admin/dashboard';
 import usersRouter from './admin/users';
@@ -28,6 +29,7 @@ function alreadyLogin(req, res, next) {
     }
 }
 
+router.use('/autoview', autoviewRouter);
 router.use('/auth', alreadyLogin, authRouter);
 router.use('/', requiresLogin, dashboardRouter);
 router.use('/dashboard', requiresLogin, dashboardRouter);
