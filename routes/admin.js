@@ -5,6 +5,7 @@ import autoviewRouter from './admin/autoview';
 import authRouter from './admin/auth';
 import dashboardRouter from './admin/dashboard';
 import usersRouter from './admin/users';
+import signalsRouter from './admin/signals';
 import settingsRouter from './admin/settings';
 import activeOrdersRouter from './admin/activeOrders';
 
@@ -34,6 +35,7 @@ router.use('/auth', alreadyLogin, authRouter);
 router.use('/', requiresLogin, dashboardRouter);
 router.use('/dashboard', requiresLogin, dashboardRouter);
 router.use('/users', requiresLogin, usersRouter);
+router.use('/signals', requiresLogin, signalsRouter);
 router.use('/settings', requiresLogin, settingsRouter);
 router.use('/active-orders', requiresLogin, activeOrdersRouter);
 

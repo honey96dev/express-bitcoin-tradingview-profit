@@ -123,12 +123,12 @@ const editProc = (req, res, next) => {
 const passwordProc = (req, res, next) => {
     const params = req.body;
     const id = params.id;
-    const oldPassword = params.oldPassword;
+    // const oldPassword = params.oldPassword;
     const password = params.password;
-    const oldHash = myCrypto.hmacHex(oldPassword);
+    // const oldHash = myCrypto.hmacHex(oldPassword);
     const hash = myCrypto.hmacHex(password);
 
-    let sql = sprintf("SELECT `id` FROM `%s` WHERE `id` = '%d' AND `password` = '%s';", dbTblName.users, id, oldHash);
+    let sql = sprintf("UPDATE `%s` SET `password` = '%s' WHERE `id` = '%d';", dbTblName.users, hash, id);
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
             console.log(error);
@@ -136,28 +136,10 @@ const passwordProc = (req, res, next) => {
                 result: strings.error,
                 message: strings.unknownServerError,
             });
-            return;
-        }
-        if (!result || result.length === 0) {
-            res.status(200).send({
-                result: strings.error,
-                message: strings.currentPasswordIncorrect,
-            });
         } else {
-            sql = sprintf("UPDATE `%s` SET `password` = '%s' WHERE `id` = '%d';", dbTblName.users, hash, id);
-            dbConn.query(sql, null, (error, result, fields) => {
-                if (error) {
-                    console.log(error);
-                    res.status(200).send({
-                        result: strings.error,
-                        message: strings.unknownServerError,
-                    });
-                } else {
-                    res.status(200).send({
-                        result: strings.success,
-                        message: strings.successfullyChanged,
-                    });
-                }
+            res.status(200).send({
+                result: strings.success,
+                message: strings.successfullyChanged,
             });
         }
     });

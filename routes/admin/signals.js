@@ -1,11 +1,8 @@
 import express from 'express';
 import {server, dbTblName} from '../../core/config';
 import dbConn from '../../core/dbConn';
-import myCrypto from '../../core/myCrypto';
 import strings from '../../core/strings';
 import {sprintf} from 'sprintf-js';
-import numeral from 'numeral';
-import sprintfJs from "sprintf-js";
 
 const router = express.Router();
 
@@ -13,10 +10,8 @@ const indexProc = (req, res, next) => {
     const styles = [
         'plugins/datatables/dataTables.bootstrap4.min.css',
         'plugins/datatables/buttons.bootstrap4.min.css',
-        '//fonts.googleapis.com/css?family=Rubik:300,400&display=swap',
         'plugins/datatables/responsive.bootstrap4.min.css',
-        server.assetsVendorsRoot + 'fontawesome-free-5.9.0-web/css/all.min.css',
-        'site/dashboard/index.css',
+        'site/signals/index.css',
     ];
     const scripts = [
         'plugins/datatables/jquery.dataTables.min.js',
@@ -25,64 +20,46 @@ const indexProc = (req, res, next) => {
         'plugins/datatables/buttons.bootstrap4.min.js',
         'plugins/datatables/dataTables.responsive.min.js',
         'plugins/datatables/responsive.bootstrap4.min.js',
-        'site/dashboard/index.js',
+        'site/signals/index.js',
     ];
-    res.render('admin/dashboard/index', {
+
+    res.render('admin/signals/index', {
         baseUrl: server.adminBaseUrl,
         uriRoot: server.adminUriRoot,
         description: server.description,
         assetsVendorsRoot: server.assetsVendorsRoot,
         author: server.author,
-        title: 'Dashboard',
+        title: 'Users',
         styles,
         scripts,
+        data: req.session.user,
     });
 };
 
-const activeBotsProc = (req, res, next) => {
-    let sql = sprintf("SELECT A.* FROM `%s` A WHERE A.activeTrading = '1';", dbTblName.users);
+const listProc = (req, res, next) => {
+    const params = req.query;
+
+    let sql = sprintf("SELECT * FROM `%s` ORDER BY `time`;", dbTblName.autoview_data);
 
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
             console.log(error);
-
             res.status(200).send({
                 result: strings.error,
+                message: strings.unknownServerError,
                 data: [],
-                error: error,
             });
-        } else {
-            res.status(200).send({
-                result: strings.success,
-                data: result,
-            })
+            return;
         }
-    });
-};
 
-const dailyProfitProc = (req, res, next) => {
-    let profit = Math.round(Math.random() * 50000 + 1000);
-    // profit = numeral(profit).format('$ 0,0.00');
-    profit = numeral(profit).format('0,0.00');
-
-    res.status(200).send({
-        result: 'success',
-        data: profit,
-    });
-};
-
-const dailyTradesProc = (req, res, next) => {
-    let trades = Math.round(Math.random() * 50 + 10);
-
-    res.status(200).send({
-        result: 'success',
-        data: trades,
+        res.status(200).send({
+            result: strings.success,
+            data: result,
+        });
     });
 };
 
 router.get('/', indexProc);
-router.get('/active-bots', activeBotsProc);
-router.get('/daily-profit', dailyProfitProc);
-router.get('/daily-trades', dailyTradesProc);
+router.get('/list', listProc);
 
 module.exports = router;

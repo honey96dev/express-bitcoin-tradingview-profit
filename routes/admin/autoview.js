@@ -8,6 +8,9 @@ const router = express.Router();
 
 const indexProc = (req, res, next) => {
     const params = req.body;
+    const strategy = params.strategy;
+    const position = params.position;
+
     const json = JSON.stringify(params);
     let time = new Date();
     time = sprintf("%04d-%02d-%02d %02d:%02d:%02d", time.getFullYear(), time.getMonth() + 1, time.getDate(), time.getHours(), time.getMinutes(), time.getSeconds());

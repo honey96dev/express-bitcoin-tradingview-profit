@@ -20,21 +20,25 @@ block mainContent
                                     th Value
                             tbody
                                 tr
+                                    td Strategy
+                                    td
+                                        a#strategy(href="#" data-type="text" data-pk="1" data-title="Enter strategy")=data['strategy']
+                                tr
                                     td % of wallet amount to use
                                     td
-                                        a#percentWallet(href="#" data-type="number" data-pk="1" data-title="% of wallet amount to use")=data['percentWallet']
+                                        a#percentWallet(href="#" data-type="number" data-pk="2" data-title="% of wallet amount to use")=data['percentWallet']
                                 tr
                                     td % of profit per trade
                                     td
-                                        a#profitPerTrade(href="#" data-type="number" data-pk="2" data-title="% of profit per trade")=data['profitPerTrade']
+                                        a#profitPerTrade(href="#" data-type="number" data-pk="3" data-title="% of profit per trade")=data['profitPerTrade']
                                 tr
                                     td % of stop loss
                                     td
-                                        a#percentStopLoss(href="#" data-type="number" data-pk="3" data-title="% of stop loss")=data['percentStopLoss']
+                                        a#percentStopLoss(href="#" data-type="number" data-pk="4" data-title="% of stop loss")=data['percentStopLoss']
                                 tr
                                     td % of take profit
                                     td
-                                        a#percentTakeProfit(href="#" data-type="number" data-pk="4" data-title="percentTakeProfit")=data['percentTakeProfit']
+                                        a#percentTakeProfit(href="#" data-type="number" data-pk="5" data-title="percentTakeProfit")=data['percentTakeProfit']
                         div.button-items
                             button#saveProperty.btn.btn-success.waves-effect.waves-light Save
                             button#restartBots.btn.btn-danger.waves-effect.waves-light Restart Bots

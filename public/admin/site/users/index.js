@@ -121,7 +121,7 @@ Users.prototype.init = function () {
                 btn.attr('disabled', false);
                 if (result === 'success') {
                     instance.showErrorMsg(form, 'success', message);
-                    $('#oldPassword').val('');
+                    // $('#oldPassword').val('');
                     $('#password').val('');
                     $('#password2').val('');
                     $.ajax({

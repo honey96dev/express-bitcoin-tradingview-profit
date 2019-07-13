@@ -1,0 +1,28 @@
+extends ../layout
+
+block mainContent
+    input#uriRoot(type="hidden" value!= uriRoot)
+    .row
+        .col-lg-12.col-sm-12
+            .card.m-b-30
+                .card-body.table-responsive
+                    h5.header-title= title
+                        |  Table
+                    //p.text-muted
+                    //    | DataTables has most features enabled by default, so all you need to do to use it with your own ables is to call the construction function:
+                    //    code $().DataTable();
+                    //    |  and border bottom.
+                    div
+                        table#table.table.table-striped.dataTable(cellspacing=0)
+                            thead
+                                tr
+                                    th No.
+                                    th Time
+                                    th Signal
+                            tbody
+                            tfoot
+                                tr
+                                    th No.
+                                    th Time
+                                    th Signal
+
