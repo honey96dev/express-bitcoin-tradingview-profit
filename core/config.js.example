@@ -43,6 +43,7 @@ module.exports = {
         admins: 'admins',
         users: 'users',
         bitmex_settings: 'bitmex_settings',
+        autoview_data: 'autoview_data',
         tokens: 'tokens',
     },
 };
