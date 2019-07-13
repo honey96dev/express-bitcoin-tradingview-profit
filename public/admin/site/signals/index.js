@@ -21,6 +21,7 @@ Signals.prototype.init = function () {
                 },
             },
             {
+                // width: '20%',
                 data: "time",
                 className: "text-right",
             },

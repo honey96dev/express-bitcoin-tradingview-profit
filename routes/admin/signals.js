@@ -52,6 +52,12 @@ const listProc = (req, res, next) => {
             return;
         }
 
+        let time
+        for (let row of result) {
+            time = new Date(row['time']);
+            row['time'] = sprintf("%02d/%02d/%04d %02d:%02d", time.getMonth() + 1, time.getDate(), time.getFullYear(), time.getHours(), time.getMinutes());
+        }
+
         res.status(200).send({
             result: strings.success,
             data: result,
