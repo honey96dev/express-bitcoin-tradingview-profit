@@ -22,13 +22,27 @@ Settings.prototype.init = function() {
         // inputclass: 'input-xxlarge',
     });
 
+    $('#minWallet').editable({
+        validate: function (value) {
+            value = parseFloat($.trim(value));
+            if (value < 0) return 'Please input a number greater than 0';
+        },
+        type: 'number',
+        step: 'any',
+        pk: 2,
+        name: 'minWallet',
+        title: 'Minimum quantity of wallet',
+        mode: 'inline',
+        inputclass: 'form-control-sm',
+    });
+
     $('#percentWallet').editable({
         validate: function (value) {
             value = parseInt($.trim(value));
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'number',
-        pk: 2,
+        pk: 3,
         name: 'percentWallet',
         title: '% of wallet amount to use',
         mode: 'inline',
@@ -41,7 +55,7 @@ Settings.prototype.init = function() {
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'number',
-        pk: 3,
+        pk: 4,
         name: 'profitPerTrade',
         title: '% of profit per trade',
         mode: 'inline',
@@ -54,7 +68,7 @@ Settings.prototype.init = function() {
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'text',
-        pk: 4,
+        pk: 5,
         name: 'percentStopLoss',
         title: '% of stop loss',
         mode: 'inline',
@@ -67,7 +81,7 @@ Settings.prototype.init = function() {
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'text',
-        pk: 5,
+        pk: 6,
         name: 'percentTakeProfit',
         title: '% of take profit',
         mode: 'inline',
@@ -79,12 +93,14 @@ Settings.prototype.init = function() {
         let section = $('#propertiesSec');
 
         let strategy = $('#strategy').html();
+        let minWallet = $('#minWallet').html();
         let percentWallet = $('#percentWallet').html();
         let profitPerTrade = $('#profitPerTrade').html();
         let percentStopLoss = $('#percentStopLoss').html();
         let percentTakeProfit = $('#percentTakeProfit').html();
 
         strategy = strategy == 'Empty' ? '' : strategy;
+        minWallet = minWallet == 'Empty' ? 0 : minWallet;
         percentWallet = percentWallet == 'Empty' ? 0 : percentWallet;
         profitPerTrade = profitPerTrade == 'Empty' ? 0 : profitPerTrade;
         percentStopLoss = percentStopLoss == 'Empty' ? 0 : percentStopLoss;
@@ -96,6 +112,7 @@ Settings.prototype.init = function() {
         btn.attr('disabled', true);
         let data = {
             strategy: strategy,
+            minWallet: minWallet,
             percentWallet: percentWallet,
             profitPerTrade: profitPerTrade,
             percentStopLoss: percentStopLoss,

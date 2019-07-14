@@ -2,6 +2,7 @@ import express from 'express';
 import {server, dbTblName} from '../../core/config';
 import strings from '../../core/strings';
 import dbConn from '../../core/dbConn';
+import {BitMEXApi, POST} from '../../core/BitmexApi';
 import {sprintf} from 'sprintf-js';
 
 const router = express.Router();
@@ -9,24 +10,177 @@ const router = express.Router();
 const indexProc = (req, res, next) => {
     const params = req.body;
     const strategy = params.strategy;
-    const position = params.position;
+    let action = params.position;
+    if (typeof strategy === 'undefined' || typeof action != 'string') {
+        res.status(200).send({
+            result: strings.error,
+            message: strings.invalidParameters,
+        });
+        return;
+    }
+    action = action.toLowerCase();
+
+    const symbol = 'XBTUSD';
 
     const json = JSON.stringify(params);
     let time = new Date();
     time = sprintf("%04d-%02d-%02d %02d:%02d:%02d", time.getFullYear(), time.getMonth() + 1, time.getDate(), time.getHours(), time.getMinutes(), time.getSeconds());
-    let sql = sprintf("INSERT INTO `autoview_data`(`time`, `text`) VALUES('%s', '%s');", time, json);
-    dbConn.query(sql, null, (error, result, fields) => {
+
+    let sql = sprintf("SELECT `value` FROM `%s` WHERE `property` = '%s';", dbTblName.bitmex_settings, 'strategy');
+    dbConn.query(sql, null, (error, strategies, fields) => {
         if (error) {
             console.log(error);
+            sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.failedDueToUnknownServerError);
+            dbConn.query(sql, null, (error, result, fields) => {});
             res.status(200).send({
                 result: strings.error,
+                message: strings.unknownServerError,
             });
-        } else {
+            return;
+        }
+
+        if (strategies.length === 0) {
+            console.error('No strategy');
+            return;
+        } else if (strategies[0]['value'] != strategy) {
+            console.error('Strategy is mismatch');
+            return;
+        }
+
+        sql = sprintf("SELECT * FROM `%s` WHERE `activeTrading` = '%d' AND `bitmexApikey` != '' AND `bitmexApikeySecret` != '';", dbTblName.users, 1);
+        dbConn.query(sql, null, (error, users, fields) => {
+            if (error) {
+                console.log(error);
+                sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.failedDueToUnknownServerError);
+                dbConn.query(sql, null, (error, result, fields) => {});
+                res.status(200).send({
+                    result: strings.error,
+                    message: strings.unknownServerError,
+                });
+                return;
+            }
+
+            for (let user of users) {
+                let testnet = user['bitmexTestnet'];
+                let apiKeyID = user['bitmexApikey'];
+                let apiKeySecret = user['bitmexApikeySecret'];
+                let bitMEXApi = new BitMEXApi(testnet, apiKeyID, apiKeySecret);
+
+                bitMEXApi.orderAll({symbol: symbol}, (result) => {
+                    let filter = JSON.stringify({symbol: symbol});
+                    bitMEXApi.position({filter: filter}, (positions) => {
+                        // console.log('position', testnet, apiKeyID, apiKeySecret, JSON.stringify(positions));
+                        let currentQty;
+                        let ordType;
+                        let side;
+                        for (let position of positions) {
+                            currentQty = position['currentQty'];
+                            console.log(strategy, action, currentQty)
+                            if (action === 'buy') {
+                                ordType = 'Market';
+                                side = 'Buy';
+                                if (currentQty > 0) {
+                                    console.log('Ignore buy due to long position');
+                                    continue;
+                                } else if (currentQty < 0 && position['isOpen']) {
+                                    bitMEXApi.orderClosePosition({symbol: symbol}, (result) => {
+                                        orderProc(bitMEXApi, ordType, symbol, side);
+                                    }, (error) => {
+                                        console.error('orderClosePosition', testnet, apiKeyID, apiKeySecret, error);
+                                    })
+                                } else {
+                                    orderProc(bitMEXApi, ordType, symbol, side);
+                                }
+                            } else if (action === 'sell') {
+                                ordType = 'Market';
+                                side = 'Sell';
+                                if (currentQty < 0) {
+                                    console.log('Ignore sell due to short position');
+                                    continue;
+                                } else if (currentQty > 0 && position['isOpen']) {
+                                    bitMEXApi.orderClosePosition({symbol: symbol}, (result) => {
+                                        orderProc(bitMEXApi, ordType, symbol, side);
+                                    }, (error) => {
+                                        console.error('orderClosePosition', testnet, apiKeyID, apiKeySecret, error);
+                                    })
+                                } else {
+                                    orderProc(bitMEXApi, ordType, symbol, side);
+                                }
+                            }
+                        }
+                    }, (error) => {
+                        console.error('position', testnet, apiKeyID, apiKeySecret, error);
+                    });
+                }, (error) => {
+                    console.error('orderAll', testnet, apiKeyID, apiKeySecret, error);
+                });
+            }
+            sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.tradesPerformedSuccessfully);
+            dbConn.query(sql, null, (error, result, fields) => {});
             res.status(200).send({
                 result: strings.success,
             });
-        }
+        });
+
     });
+};
+
+const orderProc = (bitMEXApi, ordType, symbol, side) => {
+    if (!(bitMEXApi instanceof BitMEXApi)) {
+        console.error('BitMEXApi is invalid');
+        return false;
+    }
+
+    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
+    dbConn.query(sql, null, (error, rows, fields) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        let bitMEXSettings = {
+            minWallet: 0,
+            percentStopLoss: 5,
+            percentTakeProfit: 5,
+            percentWallet: 0,
+            profitPerTrade: 5,
+        };
+        for (let row of rows) {
+            bitMEXSettings[row['property']] = row['value'];
+        }
+        // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
+        bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
+            // console.log('wallet', JSON.stringify(wallet));
+            const satoshi2Bitcoin = 100000000;
+            let walletAmount = wallet['amount'] / satoshi2Bitcoin;
+            if (walletAmount < bitMEXSettings['minWallet']) {
+                console.error('Wallet amount is lower than minimum amount of wallet');
+                return;
+            }
+            bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
+                // console.log('trades', JSON.stringify(trades[0]));
+                let price = trades[0]['price'];
+                let orderQty = walletAmount * price * bitMEXSettings['percentWallet'] / 100;
+                console.log('orderQty', walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
+                orderQty = Math.round(orderQty);
+                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side}, (result) => {
+                    console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
+                }, (error) => {
+                    console.error(error);
+                })
+            }, (error) => {
+                console.error(error);
+            });
+        }, (error) => {
+            console.error(error);
+        });
+    });
+};
+
+const sellProc = (bitMEXApi, type, symbol) => {
+    if (!(bitMEXApi instanceof BitMEXApi)) {
+        return false;
+    }
+    // bitMEXApi.
 };
 
 router.post('/', indexProc);

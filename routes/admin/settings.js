@@ -57,7 +57,7 @@ const savePropertiesProc = (req, res, next) => {
     });
 
     let sql = sprintf("INSERT INTO `%s` VALUES ? ON DUPLICATE KEY UPDATE `property` = VALUES(`property`), `value` = VALUES(`value`);", dbTblName.bitmex_settings);
-    console.log(sql, settings);
+    // console.log(sql, settings);
     // let sql = "INSERT INTO `bitmex_settings` VALUES ? ON DUPLICATE KEY UPDATE `property` = VALUES(`property`), `value` = VALUES(`value`);";
     dbConn.query(sql, [settings], (error, result, fields) => {
         if (error) {

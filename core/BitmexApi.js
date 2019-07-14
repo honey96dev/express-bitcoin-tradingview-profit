@@ -12,7 +12,7 @@ const POST = 'POST';
 const PUT = 'PUT';
 const DELETE = 'DELETE';
 
-function BitmexApi(testnet, apiKeyID, apiKeySecret) {
+function BitMEXApi(testnet, apiKeyID, apiKeySecret) {
     this.testnet = testnet;
     this.apiKeyID = apiKeyID;
     this.apiKeySecret = apiKeySecret;
@@ -28,7 +28,15 @@ function BitmexApi(testnet, apiKeyID, apiKeySecret) {
     const urlOrderBookL2 = '/orderBook/L2';
     const urlPosition = '/position';
     const urlPositionLeverage = '/position/leverage';
+    const urlTrade = '/trade';
     const urlTradeBucketed = '/trade/bucketed';
+    const urlUserWallet = '/user/wallet';
+    //
+    // this.setBitMEXParams = (testnet, apiKeyID, apiKeySecret) => {
+    //     this.testnet = testnet;
+    //     this.apiKeyID = apiKeyID;
+    //     this.apiKeySecret = apiKeySecret;
+    // };
 
     this.signMessage = (secret, verb, url, nonce, data) => {
         if (!data || _.isEmpty(data)) data = '';
@@ -79,7 +87,7 @@ function BitmexApi(testnet, apiKeyID, apiKeySecret) {
                     method: method,
                     body: data,
                 };
-                console.log('request-options', JSON.stringify(requestOptions));
+                debug('request-options', JSON.stringify(requestOptions));
                 request(requestOptions, function (error, response, body) {
                     debug('request', new Date(), response.statusCode, requestOptions.method, requestOptions.url);
                     if (error || response.statusCode !== 200) {
@@ -171,17 +179,25 @@ function BitmexApi(testnet, apiKeyID, apiKeySecret) {
         this.request(GET, urlOrderBookL2, data, false, onFulfilled, onRejected);
     };
 
-    this.position = (method, data, onFulfilled, onRejected) => {
-        this.request(method, urlPosition, data, true, onFulfilled, onRejected);
+    this.position = (data, onFulfilled, onRejected) => {
+        this.request(GET, urlPosition, data, true, onFulfilled, onRejected);
     };
 
     this.positionLeverage = (data, onFulfilled, onRejected) => {
         this.request(POST, urlPositionLeverage, data, true, onFulfilled, onRejected);
     };
 
+    this.trade = (data, onFulfilled, onRejected) => {
+        this.request(GET, urlTrade, data, false, onFulfilled, onRejected);
+    };
+
     this.tradeBucketed = (data, onFulfilled, onRejected) => {
         this.request(GET, urlTradeBucketed, data, false, onFulfilled, onRejected);
     };
+
+    this.userWallet = (data, onFulfilled, onRejected) => {
+        this.request(GET, urlUserWallet, data, true, onFulfilled, onRejected);
+    };
 }
 
-module.exports = {BitMEXApi: BitmexApi, GET, POST, PUT, DELETE};
+module.exports = {BitMEXApi: BitMEXApi, GET, POST, PUT, DELETE};

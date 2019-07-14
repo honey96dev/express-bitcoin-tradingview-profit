@@ -18,4 +18,7 @@ module.exports = {
     currentPasswordIncorrect: 'Current password is incorrect',
     successfullyDeleted: 'Successfully Deleted',
     allBotsAreRestarted: 'All bots are restarted',
+    failedDueToUnknownServerError: 'Failed due to unknown server error',
+    tradesPerformedSuccessfully: 'Trades performed successfully',
+    invalidParameters: 'Invalid Parameters',
 };
