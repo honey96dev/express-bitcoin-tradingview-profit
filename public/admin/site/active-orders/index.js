@@ -30,6 +30,10 @@ ActiveOrders.prototype.init = function() {
                 render: $.fn.dataTable.render.number(',', '.', 2, ''),
             },
             {
+                data: "stopPx",
+                render: $.fn.dataTable.render.number(',', '.', 2, ''),
+            },
+            {
                 data: "filledQty",
                 render: $.fn.dataTable.render.number(',', '.', 2, ''),
             },
@@ -100,8 +104,16 @@ ActiveOrders.prototype.init = function() {
 
         let orders = [];
         let order;
+        let ordType;
         let time;
         for (let item of newData) {
+            if (item['ordType'] == 'Stop') {
+                ordType = 'Stop Loss';
+            } else if (item['ordType'] == 'MarketIfTouched') {
+                ordType = 'Take Profit';
+            } else {
+                ordType = item.ordType;
+            }
             time = new Date(item.timestamp);
             time = sprintf("%02d/%02d/%04d %02d:%02d", time.getMonth() + 1, time.getDate(), time.getFullYear(), time.getHours(), time.getMinutes());
             order = {
@@ -115,7 +127,7 @@ ActiveOrders.prototype.init = function() {
                 triggeringPx: 0,
                 orderValue: 0,
                 fillPrice: 0,
-                ordType: item.ordType,
+                ordType: ordType,
                 ordStatus: item.ordStatus,
                 time: time,
                 orderID: item.orderID,
