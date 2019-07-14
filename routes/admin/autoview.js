@@ -178,14 +178,14 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
                 }, (error) => {
                     console.error(error);
                 });
-                let stopPx = Math.round(price * (1 + bitMEXSettings['percentWallet'] / 100));
+                let stopPx = Math.round(price * (1.1));
                 console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 }, (error) => {
                     console.error(error);
                 });
-                stopPx = Math.round(price * (1 - bitMEXSettings['percentStopLoss'] / 100));
+                stopPx = Math.round(price * (0.9));
                 console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
