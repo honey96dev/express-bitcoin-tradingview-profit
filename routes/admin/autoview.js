@@ -41,9 +41,17 @@ const indexProc = (req, res, next) => {
 
         if (strategies.length === 0) {
             console.error('No strategy');
+            res.status(200).send({
+                result: strings.error,
+                message: strings.noStrategy,
+            });
             return;
         } else if (strategies[0]['value'] != strategy) {
             console.error('Strategy is mismatch');
+            res.status(200).send({
+                result: strings.error,
+                message: strings.strategyIsMismatch,
+            });
             return;
         }
 

@@ -21,4 +21,6 @@ module.exports = {
     failedDueToUnknownServerError: 'Failed due to unknown server error',
     tradesPerformedSuccessfully: 'Trades performed successfully',
     invalidParameters: 'Invalid Parameters',
+    noStrategy: 'No strategy',
+    strategyIsMismatch: 'Strategy is mismatch',
 };
