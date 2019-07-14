@@ -39,7 +39,7 @@ const indexProc = (req, res, next) => {
 const listProc = (req, res, next) => {
     const params = req.query;
 
-    let sql = sprintf("SELECT * FROM `%s` ORDER BY `time`;", dbTblName.autoview_data);
+    let sql = sprintf("SELECT * FROM `%s` ORDER BY `time` DESC;", dbTblName.autoview_data);
 
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
