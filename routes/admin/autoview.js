@@ -169,23 +169,26 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
             }
             bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
                 // console.log('trades', JSON.stringify(trades[0]));
-                let price = trades[0]['price'];
-                let orderQty = walletAmount * price * bitMEXSettings['percentWallet'] / 100;
+                const price = trades[0]['price'];
+                const balance = walletAmount * price;
+
+                const orderQty = Math.round(balance * bitMEXSettings['percentWallet'] / 100);
                 console.log('orderQty', walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
-                orderQty = Math.round(orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side}, (result) => {
                     console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
                 }, (error) => {
                     console.error(error);
                 });
-                let stopPx = Math.round(price * (1.1));
+
+                let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit'] / 100);
                 console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 }, (error) => {
                     console.error(error);
                 });
-                stopPx = Math.round(price * (0.9));
+                
+                stopPx = Math.round(price - balance * bitMEXSettings['percentTakeProfit'] / 100);
                 console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
