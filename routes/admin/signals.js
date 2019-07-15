@@ -29,7 +29,7 @@ const indexProc = (req, res, next) => {
         description: server.description,
         assetsVendorsRoot: server.assetsVendorsRoot,
         author: server.author,
-        title: 'Users',
+        title: 'Signals',
         styles,
         scripts,
         data: req.session.user,

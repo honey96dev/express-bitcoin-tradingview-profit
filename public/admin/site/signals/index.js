@@ -29,6 +29,10 @@ Signals.prototype.init = function () {
                 data: "text",
                 className: "text-left",
             },
+            {
+                data: "perform",
+                className: "text-left",
+            },
         ]
     });
 };
