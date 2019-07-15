@@ -124,9 +124,20 @@ const indexProc = (req, res, next) => {
                 });
             }
             sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.tradesPerformedSuccessfully);
-            dbConn.query(sql, null, (error, result, fields) => {});
-            res.status(200).send({
-                result: strings.success,
+            dbConn.query(sql, null, (error, result, fields) => {
+                if (error) {
+                    console.log(error);
+                    sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.failedDueToUnknownServerError);
+                    dbConn.query(sql, null, (error, result, fields) => {});
+                    res.status(200).send({
+                        result: strings.error,
+                        message: strings.unknownServerError,
+                    });
+                    return;
+                }
+                res.status(200).send({
+                    result: strings.success,
+                });
             });
         });
 
@@ -187,7 +198,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
                 }, (error) => {
                     console.error(error);
                 });
-                
+
                 stopPx = Math.round(price - balance * bitMEXSettings['percentTakeProfit'] / 100);
                 console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
                 bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
