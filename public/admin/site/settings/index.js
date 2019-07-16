@@ -42,6 +42,7 @@ Settings.prototype.init = function() {
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'number',
+        step: 'any',
         pk: 3,
         name: 'percentWallet',
         title: '% of wallet amount to use',
@@ -55,6 +56,7 @@ Settings.prototype.init = function() {
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
         type: 'number',
+        step: 'any',
         pk: 4,
         name: 'profitPerTrade',
         title: '% of profit per trade',
@@ -67,7 +69,8 @@ Settings.prototype.init = function() {
             value = parseInt($.trim(value));
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
-        type: 'text',
+        type: 'number',
+        step: 'any',
         pk: 5,
         name: 'percentStopLoss',
         title: '% of stop loss',
@@ -80,7 +83,8 @@ Settings.prototype.init = function() {
             value = parseInt($.trim(value));
             if (value < 0 || value > 100) return 'Please input a number between 0~100';
         },
-        type: 'text',
+        type: 'number',
+        step: 'any',
         pk: 6,
         name: 'percentTakeProfit',
         title: '% of take profit',
