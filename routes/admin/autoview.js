@@ -40,14 +40,18 @@ const indexProc = (req, res, next) => {
         }
 
         if (strategies.length === 0) {
-            console.error('No strategy');
+            console.error(strings.noStrategy);
+            sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.noStrategy);
+            dbConn.query(sql, null, (error, result, fields) => {});
             res.status(200).send({
                 result: strings.error,
                 message: strings.noStrategy,
             });
             return;
         } else if (strategies[0]['value'] != strategy) {
-            console.error('Strategy is mismatch');
+            console.error(strings.strategyIsMismatch);
+            sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.strategyIsMismatch);
+            dbConn.query(sql, null, (error, result, fields) => {});
             res.status(200).send({
                 result: strings.error,
                 message: strings.strategyIsMismatch,
