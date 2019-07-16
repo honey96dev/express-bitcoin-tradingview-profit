@@ -320,17 +320,11 @@ let service = {
             for (let item of data) {
                 for (idx = cnt; idx >= 0; idx--) {
                     if (item.orderID === orders[idx].orderID) {
-                        // console.log('orders[idx].ordStatus', orders[idx].ordStatus);
-                        if (item.ordStatus === 'Filled' || item.ordStatus === 'Canceled') {
-                            // console.log('orders[idx]1234', orders[idx].ordStatus);
-                            orders.splice(idx, 1);
-                        } else {
-                            Object.entries(item).forEach(entry => {
-                                let key = entry[0];
-                                let value = entry[1];
-                                orders[idx][key] = value;
-                            });
-                        }
+                        Object.entries(item).forEach(entry => {
+                            let key = entry[0];
+                            let value = entry[1];
+                            orders[idx][key] = value;
+                        });
                         break;
                     }
                 }
@@ -340,6 +334,26 @@ let service = {
 
         if (!!service.ioClient && service.ioClient.connected) {
             // console.log('emit-orders', service.orders);
+            service.ioClient.emit('orders', map_to_json(service.orders));
+        }
+
+        if (action === 'update') {
+            let orders = service.orders.get(account.id);
+            let idx;
+            const cnt = orders.length - 1;
+            for (let item of data) {
+                for (idx = cnt; idx >= 0; idx--) {
+                    if (item.orderID === orders[idx].orderID) {
+                        if (item.ordStatus === 'Filled' || item.ordStatus === 'Canceled') {
+                            orders.splice(idx, 1);
+                        }
+                    }
+                }
+            }
+            service.orders.set(account.id, orders);
+        }
+
+        if (!!service.ioClient && service.ioClient.connected) {
             service.ioClient.emit('orders', map_to_json(service.orders));
         }
     },

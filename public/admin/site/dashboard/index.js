@@ -80,7 +80,7 @@ function Dashboard() {
         url: self.uriRoot + 'dashboard/daily-trades',
         dataType: 'json',
         success: function (res) {
-            $('#dailyTrades').html(res.data);
+            $('#dailyTrades').html(res.data.length);
         },
         error: function () {
             $('#dailyTrades').html('N/A');

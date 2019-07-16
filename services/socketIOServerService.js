@@ -209,13 +209,39 @@ let service = {
             });
 
             socket.on('orders', (data) => {
-                let clientIds = [];
-                for (let item of service.ordersClientSockets) {
-                    clientIds.push(item.id);
-                }
-                // console.log('orders', data);
+                // let clientIds = [];
+                // for (let item of service.ordersClientSockets) {
+                //     clientIds.push(item.id);
+                // }
+                console.error('orders', data);
                 // console.log('service.ordersClientSockets', clientIds);
                 service.orders = JSON.parse(data);
+
+                Object.entries(service.orders).forEach(entry => {
+                    let key = entry[0];
+                    let value = entry[1];
+                    let dbValues = [];
+                    for (let order of value) {
+                        dbValues.push([
+                            order.orderID,
+                            order.timestamp,
+                            key,
+                            order.ordType,
+                            order.orderQty,
+                            order.stopPx,
+                            order.ordStatus,
+                        ]);
+                    }
+                    if (dbValues.length > 0) {
+                        let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `orderQty`, `stopPx`, `ordStatus`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`);", dbTblName.bitmex_orders);
+                        dbConn.query(sql, [dbValues], (error, result, fields) => {
+                            if (error) {
+                                console.log(error);
+                            }
+                        });
+                    }
+                });
+
                 for (let client of service.ordersClientSockets) {
                     // console.log('service.serveAccountIds', client.id, service.serveAccountIds[client.id]);
                     let ioData = {};

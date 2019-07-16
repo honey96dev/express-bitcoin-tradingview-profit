@@ -83,11 +83,25 @@ const dailyProfitProc = (req, res, next) => {
 };
 
 const dailyTradesProc = (req, res, next) => {
-    let trades = Math.round(Math.random() * 50 + 10);
+    let today = new Date();
+    today = sprintf("%04d-%02d-%02d", today.getFullYear(), today.getMonth() + 1, today.getDate());
+    let sql = sprintf("SELECT * FROM `%s` WHERE `timestamp` LIKE '%s%s';", dbTblName.bitmex_orders, today, '%s');
 
-    res.status(200).send({
-        result: 'success',
-        data: trades,
+    dbConn.query(sql, null, (error, result, fields) => {
+        if (error) {
+            console.log(error);
+
+            res.status(200).send({
+                result: strings.error,
+                data: [],
+                error: error,
+            });
+        } else {
+            res.status(200).send({
+                result: strings.success,
+                data: result,
+            })
+        }
     });
 };
 
