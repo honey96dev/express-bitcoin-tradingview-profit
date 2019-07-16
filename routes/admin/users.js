@@ -49,9 +49,9 @@ const listProc = (req, res, next) => {
     }
     let sql;
     if (!!date) {
-        sql = sprintf("SELECT * FROM `%s` WHERE `signedUpDate` = '%s';", dbTblName.users, date);
+        sql = sprintf("SELECT U.*, SUM(H.deltaAmount) `totalProfit` FROM `%s` U LEFT JOIN `%s` H ON H.userId = U.id AND H.prevAmount != 0 WHERE `signedUpDate` = '%s' GROUP BY U.id;", dbTblName.users, dbTblName.bitmex_wallet_history, date);
     } else {
-        sql = sprintf("SELECT * FROM `%s`;", dbTblName.users);
+        sql = sprintf("SELECT U.*, SUM(H.deltaAmount) `totalProfit` FROM `%s` U LEFT JOIN `%s` H ON H.userId = U.id AND H.prevAmount != 0 GROUP BY U.id;", dbTblName.users, dbTblName.bitmex_wallet_history);
     }
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
@@ -66,7 +66,8 @@ const listProc = (req, res, next) => {
         let row;
         let signedUpDate;
         for (row of result) {
-            row['totalProfit'] = Math.round(Math.random() * 5000 + 1000);
+            // row['totalProfit'] = Math.round(Math.random() * 5000 + 1000);
+            row['totalProfit'] = row['totalProfit'] / 100000000;
             signedUpDate = new Date(row['signedUpDate']);
             row['signedUpDate'] = sprintf('%02d/%02d/%04d', signedUpDate.getMonth() + 1, signedUpDate.getDate(), signedUpDate.getFullYear());
         }

@@ -35,7 +35,11 @@ function Dashboard() {
         url: self.uriRoot + 'users/list?getToday=1',
         dataType: 'json',
         success: function (res) {
-            $('#newUsers').html(res.data.length);
+            if (res.result == 'success') {
+                $('#newUsers').html(res.data.length);
+            } else {
+                $('#newUsers').html('N/A');
+            }
         },
         error: function () {
             $('#newUsers').html('N/A');
@@ -46,7 +50,11 @@ function Dashboard() {
         url: self.uriRoot + 'dashboard/active-bots',
         dataType: 'json',
         success: function (res) {
-            $('#activeBots').html(res.data.length);
+            if (res.result == 'success') {
+                $('#activeBots').html(res.data.length);
+            } else {
+                $('#activeBots').html('N/A');
+            }
         },
         error: function () {
             $('#activeBots').html('N/A');
@@ -57,7 +65,11 @@ function Dashboard() {
         url: self.uriRoot + 'dashboard/daily-profit',
         dataType: 'json',
         success: function (res) {
-            $('#dailyProfit').html(res.data);
+            if (res.result == 'success') {
+                $('#dailyProfit').html(res.data);
+            } else {
+                $('#dailyProfit').html('N/A');
+            }
         },
         error: function () {
             $('#dailyProfit').html('N/A');

@@ -42,7 +42,7 @@ Users.prototype.init = function () {
             {
                 data: "totalProfit",
                 className: "text-right",
-                render: $.fn.dataTable.render.number(',', '.', 2, ''),
+                render: $.fn.dataTable.render.number(',', '.', 4, ''),
             },
             {
                 width: '30',

@@ -1,5 +1,6 @@
-import config from '../core/config';
+import config, {dbTblName} from '../core/config';
 import dbConn from '../core/dbConn';
+import {BitMEXApi} from '../core/BitmexApi';
 import sprintfJs from 'sprintf-js';
 import {DELETE} from "../core/BitmexApi";
 import request from "request";
@@ -96,7 +97,8 @@ let service = {
                 const json = JSON.parse(data);
 
                 service.wallets = {};
-
+                //
+                // let dbValues = [];
                 Object.entries(json).forEach(entry => {
                     let key = entry[0];
                     let value = entry[1];
@@ -106,6 +108,57 @@ let service = {
                     //     service.wallets.push(value1);
                     // });
                     service.wallets[value.accountId] = value;
+                    // dbValues.push([
+                    //     sprintfJs.sprintf("%s:%s", value.timestamp, value.accountId),
+                    //     value.timestamp,
+                    //     value.accountId,
+                    //     value.prevAmount,
+                    //     value.amount,
+                    //     value.deltaAmount
+                    // ])
+                });
+                //
+                // if (dbValues.length > 0) {
+                //     let sql = sprintfJs.sprintf("INSERT INTO `%s`(`id`, `timestamp`, `userId`, `prevAmount`, `amount`, `deltaAmount`) VALUES ? ON DUPLICATE KEY UPDATE `id` = VALUES(`id`), `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `prevAmount` = VALUES(`prevAmount`), `amount` = VALUES(`amount`), `deltaAmount` = VALUES(`deltaAmount`);", dbTblName.bitmex_wallet_history);
+                //     dbConn.query(sql, [dbValues], (error, result, fields) => {
+                //         if (error) {
+                //             console.log(error);
+                //         }
+                //     });
+                // }
+                Object.entries(json).forEach(entry => {
+                    let key = entry[0];
+                    let value = entry[1];
+                    let bitMEXApi = new BitMEXApi(value.testnet, value.apiKeyID, value.apiKeySecret);
+                    bitMEXApi.userWalletHistory({start: 0, count: 1000000, reverse: false}, (result) => {
+                        let dbValues = [];
+                        let prevBalance = 0;
+                        const cnt = result.length;
+                        let item;
+                        for (let i = cnt - 1; i >= 0; i--) {
+                            item = result[i];
+                            if (item.timestamp == null || item.timestamp === undefined) continue;
+                            dbValues.push([
+                                sprintfJs.sprintf("%s:%s", item.timestamp, value.accountId),
+                                item.timestamp,
+                                value.accountId,
+                                prevBalance,
+                                item.walletBalance,
+                                item.walletBalance - prevBalance
+                            ]);
+                            prevBalance = item.walletBalance;
+                        }
+                        if (dbValues.length > 0) {
+                            let sql = sprintfJs.sprintf("INSERT INTO `%s`(`id`, `timestamp`, `userId`, `prevAmount`, `amount`, `deltaAmount`) VALUES ? ON DUPLICATE KEY UPDATE `id` = VALUES(`id`), `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `prevAmount` = VALUES(`prevAmount`), `amount` = VALUES(`amount`), `deltaAmount` = VALUES(`deltaAmount`);", dbTblName.bitmex_wallet_history);
+                            dbConn.query(sql, [dbValues], (error, result, fields) => {
+                                if (error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                    }, (error) => {
+                        console.log(error);
+                    });
                 });
 
                 for (let client of service.walletsClientSockets) {
@@ -117,7 +170,7 @@ let service = {
                     }
                     client.emit('wallets', ioData);
                 }
-                // console.log('wallets', JSON.stringify(service.wallets));
+                // console.error('wallets', JSON.stringify(service.wallets));
             });
 
             socket.on('positions', (data) => {

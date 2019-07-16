@@ -5,7 +5,6 @@ import myCrypto from '../../core/myCrypto';
 import strings from '../../core/strings';
 import {sprintf} from 'sprintf-js';
 import numeral from 'numeral';
-import sprintfJs from "sprintf-js";
 
 const router = express.Router();
 
@@ -61,13 +60,25 @@ const activeBotsProc = (req, res, next) => {
 };
 
 const dailyProfitProc = (req, res, next) => {
-    let profit = Math.round(Math.random() * 50000 + 1000);
-    // profit = numeral(profit).format('$ 0,0.00');
-    profit = numeral(profit).format('0,0.00');
+    let today = new Date();
+    today = sprintf("%04d-%02d-%02d", today.getFullYear(), today.getMonth() + 1, today.getDate());
+    let sql = sprintf("SELECT SUM(`deltaAmount`) `profit` FROM `%s` WHERE `prevAmount` != 0 AND `timestamp` LIKE '%s%s';", dbTblName.bitmex_wallet_history, today, '%');
 
-    res.status(200).send({
-        result: 'success',
-        data: profit,
+    dbConn.query(sql, null, (error, result, fields) => {
+        if (error) {
+            console.log(error);
+
+            res.status(200).send({
+                result: strings.error,
+                data: 0,
+                error: error,
+            });
+        } else {
+            res.status(200).send({
+                result: strings.success,
+                data: numeral(result[0]['profit'] / 100000000).format('0,0.000000'),
+            })
+        }
     });
 };
 

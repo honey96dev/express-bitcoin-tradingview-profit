@@ -1,5 +1,5 @@
 import express from 'express';
-import {server, dbTblName} from '../../core/config';
+import {dbTblName} from '../../core/config';
 import strings from '../../core/strings';
 import dbConn from '../../core/dbConn';
 import {BitMEXApi, POST} from '../../core/BitmexApi';

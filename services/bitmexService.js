@@ -393,16 +393,37 @@ let service = {
     },
 
     onWsWallet: (action, data, account) => {
-        // console.log('onWsWallet', account.id, action, JSON.stringify(data));
+        // console.error('onWsWallet', account.id, action, JSON.stringify(data));
         if (action === 'partial') {
             if (data.length > 0) {
                 let item = data[0];
                 item['accountId'] = account.id;
+                item['testnet'] = account.testnet;
+                item['apiKeyID'] = account.apiKeyID;
+                item['apiKeySecret'] = account.apiKeySecret;
                 service.wallets.set(item.account, item);
-
+            }
+        } else if (action === 'insert') {
+            if (data.length > 0) {
+                let item = data[0];
+                item['accountId'] = account.id;
+                item['testnet'] = account.testnet;
+                item['apiKeyID'] = account.apiKeyID;
+                item['apiKeySecret'] = account.apiKeySecret;
+                service.wallets.set(item.account, item);
             }
         } else if (action === 'update') {
+            if (data.length > 0) {
+                let item = data[0];
+                let wallet = service.wallets.get(item.account);
+                Object.entries(item).forEach(entry => {
+                    let key = entry[0];
+                    let value = entry[1];
 
+                    wallet[key] = value;
+                });
+                service.wallets.set(item.account, wallet);
+            }
         }
         // if (account.isParent && !!service.ioClient && service.ioClient.connected) {
         if (!!service.ioClient && service.ioClient.connected) {

@@ -19,9 +19,9 @@ if (cluster.isWorker) {
     BitMEXService.initFromDb(config.dbTblName.users, () => {
         BitMEXService.wsOrderBookL2_25('*');
         BitMEXService.wsOrder('*');
-        // BitMEXService.wsExecution('*');
-        // BitMEXService.wsPosition('*');
-        // BitMEXService.wsWallet('*');
+        BitMEXService.wsExecution('*');
+        BitMEXService.wsPosition('*');
+        BitMEXService.wsWallet('*');
         // BitMEXService.restPosition(GET, {}, (data) => {
         //     console.log('restPosition', JSON.stringify(data));
         // }, (error) => {
