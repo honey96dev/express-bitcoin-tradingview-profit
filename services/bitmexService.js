@@ -42,10 +42,10 @@ let service = {
         });
         service.ioClient.on('remakeAllSocket', (data) => {
             service.initFromDb(config.dbTblName.users, () => {
-                service.wsOrderBookL2_25('*');
-                service.wsOrder('*');
-                service.wsExecution('*');
-                service.wsPosition('*');
+                service.wsOrderBookL2_25('XBTUSD');
+                service.wsOrder('XBTUSD');
+                service.wsExecution('XBTUSD');
+                service.wsPosition('XBTUSD');
                 service.wsWallet('*');
             });
         });
@@ -370,6 +370,9 @@ let service = {
                 if (typeof service.positions.get(item.account) === 'undefined') {
                     let map = new Map();
                     map.set('accountId', account.id);
+                    map.set('testnet', account.testnet);
+                    map.set('apiKeyID', account.apiKeyID);
+                    map.set('apiKeySecret', account.apiKeySecret);
                     service.positions.set(item.account, map);
                 }
                 let position = service.positions.get(item.account);
