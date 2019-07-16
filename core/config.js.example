@@ -45,6 +45,7 @@ module.exports = {
         bitmex_settings: 'bitmex_settings',
         autoview_data: 'autoview_data',
         bitmex_wallet_history: 'bitmex_wallet_history',
+        bitmex_orders: 'bitmex_orders',
         tokens: 'tokens',
     },
 };
