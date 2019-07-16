@@ -86,7 +86,7 @@ const dailyTradesProc = (req, res, next) => {
     let today = new Date();
     today = sprintf("%04d-%02d-%02d", today.getFullYear(), today.getMonth() + 1, today.getDate());
     let sql = sprintf("SELECT * FROM `%s` WHERE `timestamp` LIKE '%s%s';", dbTblName.bitmex_orders, today, '%s');
-
+    console.log('dailyTradesProc', sql);
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {
             console.log(error);
