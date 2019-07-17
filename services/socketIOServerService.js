@@ -237,41 +237,41 @@ let service = {
                             order.stopPx,
                             order.ordStatus,
                         ]);
-
-                        if (order.ordType == 'Stop' && order.ordStatus == 'Filled') {
-                            let sql = sprintfJs.sprintf("SELECT * FROM `%s` WHERE `id` = '%d';", dbTblName.users, key);
-                            dbConn.query(sql, null, (error, result, fields) => {
-                                if (error || result.length === 0) {
-                                    console.log('Invalid user data');
-                                    return;
-                                }
-                                const row = result[0];
-                                let bitMEXApi = new BitMEXApi(row.bitmexTestnet, row.bitmexApikey, row.bitmexApikeySecret);
-                                let filter = JSON.stringify({ordType: "MarketIfTouched"});
-                                bitMEXApi.orderAll({symbol: 'XBTUSD', filter: filter}, (result) => {
-                                    console.log('Take profit canceled due to no position');
-                                }, (error) => {
-                                    console.log(error);
-                                });
-                            });
-                        }
-                        if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'Filled') {
-                            let sql = sprintfJs.sprintf("SELECT * FROM `%s` WHERE `id` = '%d';", dbTblName.users, key);
-                            dbConn.query(sql, null, (error, result, fields) => {
-                                if (error || result.length === 0) {
-                                    console.log('Invalid user data');
-                                    return;
-                                }
-                                const row = result[0];
-                                let bitMEXApi = new BitMEXApi(row.bitmexTestnet, row.bitmexApikey, row.bitmexApikeySecret);
-                                let filter = JSON.stringify({ordType: "Stop"});
-                                bitMEXApi.orderAll({symbol: 'XBTUSD', filter: filter}, (result) => {
-                                    console.log('Stop loss canceled due to no position');
-                                }, (error) => {
-                                    console.log(error);
-                                });
-                            });
-                        }
+                        //
+                        // if (order.ordType == 'Stop' && order.ordStatus == 'Filled') {
+                        //     let sql = sprintfJs.sprintf("SELECT * FROM `%s` WHERE `id` = '%d';", dbTblName.users, key);
+                        //     dbConn.query(sql, null, (error, result, fields) => {
+                        //         if (error || result.length === 0) {
+                        //             console.log('Invalid user data');
+                        //             return;
+                        //         }
+                        //         const row = result[0];
+                        //         let bitMEXApi = new BitMEXApi(row.bitmexTestnet, row.bitmexApikey, row.bitmexApikeySecret);
+                        //         let filter = JSON.stringify({ordType: "MarketIfTouched"});
+                        //         bitMEXApi.orderAll({symbol: 'XBTUSD', filter: filter}, (result) => {
+                        //             console.log('Take profit canceled due to no position');
+                        //         }, (error) => {
+                        //             console.log(error);
+                        //         });
+                        //     });
+                        // }
+                        // if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'Filled') {
+                        //     let sql = sprintfJs.sprintf("SELECT * FROM `%s` WHERE `id` = '%d';", dbTblName.users, key);
+                        //     dbConn.query(sql, null, (error, result, fields) => {
+                        //         if (error || result.length === 0) {
+                        //             console.log('Invalid user data');
+                        //             return;
+                        //         }
+                        //         const row = result[0];
+                        //         let bitMEXApi = new BitMEXApi(row.bitmexTestnet, row.bitmexApikey, row.bitmexApikeySecret);
+                        //         let filter = JSON.stringify({ordType: "Stop"});
+                        //         bitMEXApi.orderAll({symbol: 'XBTUSD', filter: filter}, (result) => {
+                        //             console.log('Stop loss canceled due to no position');
+                        //         }, (error) => {
+                        //             console.log(error);
+                        //         });
+                        //     });
+                        // }
                     }
                     if (dbValues.length > 0) {
                         let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `orderQty`, `stopPx`, `ordStatus`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`);", dbTblName.bitmex_orders);
