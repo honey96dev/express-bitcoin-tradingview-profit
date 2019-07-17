@@ -359,12 +359,13 @@ const monitorPosition = () => {
         let account = service.accounts[accountId];
         let orders = service.orders[accountId];
         if (!orders) {
+            console.log(accountId, 'Orders are null');
             return;
         }
         let symbol = 'XBTUSD';
         let bitMEXApi = new BitMEXApi(account.testnet, account.apiKeyID, account.apiKeySecret);
         if (symbols.length === 0 && orders.length > 0) {
-            // console.log(value.accountId, strings.allOrdersAreCanceledDueToNoPosition);
+            console.log(accountId, strings.allOrdersAreCanceledDueToNoPosition);
             bitMEXApi.orderAll({symbol: symbol});
             return;
         }
