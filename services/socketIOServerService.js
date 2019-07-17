@@ -364,9 +364,11 @@ const monitorPosition = () => {
         }
         let symbol = 'XBTUSD';
         let bitMEXApi = new BitMEXApi(account.testnet, account.apiKeyID, account.apiKeySecret);
-        if (symbols.length === 0 && orders.length > 0) {
-            console.log(accountId, strings.allOrdersAreCanceledDueToNoPosition);
-            bitMEXApi.orderAll({symbol: symbol});
+        if (symbols.length === 0) {
+            if (orders.length > 0) {
+                console.log(accountId, strings.allOrdersAreCanceledDueToNoPosition);
+                bitMEXApi.orderAll({symbol: symbol});
+            }
             return;
         }
         let TPFlag = false;
@@ -392,6 +394,7 @@ const monitorPosition = () => {
             console.log(accountId, 'stopLossOrderProc');
             stopLossOrderProc(bitMEXApi, symbol)
         }
+        console.log(accountId, 'done');
     });
 };
 
