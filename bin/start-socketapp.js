@@ -17,11 +17,11 @@ if (cluster.isWorker) {
     BitMEXService.initSocketIOClient();
 
     BitMEXService.initFromDb(config.dbTblName.users, () => {
-        BitMEXService.wsOrderBookL2_25('XBTUSD');
         BitMEXService.wsOrder('XBTUSD');
+        BitMEXService.wsOrderBookL2_25('XBTUSD');
         BitMEXService.wsExecution('XBTUSD');
-        BitMEXService.wsPosition('XBTUSD');
         BitMEXService.wsWallet('*');
+        BitMEXService.wsPosition('XBTUSD');
         // BitMEXService.restPosition(GET, {}, (data) => {
         //     console.log('restPosition', JSON.stringify(data));
         // }, (error) => {

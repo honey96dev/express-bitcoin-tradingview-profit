@@ -42,11 +42,11 @@ let service = {
         });
         service.ioClient.on('remakeAllSocket', (data) => {
             service.initFromDb(config.dbTblName.users, () => {
-                service.wsOrderBookL2_25('XBTUSD');
                 service.wsOrder('XBTUSD');
+                service.wsOrderBookL2_25('XBTUSD');
                 service.wsExecution('XBTUSD');
-                service.wsPosition('XBTUSD');
                 service.wsWallet('*');
+                service.wsPosition('XBTUSD');
             });
         });
         service.ioClient.on('connect', () => {

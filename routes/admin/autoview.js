@@ -197,26 +197,26 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
                     bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side}, (result) => {
                         console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
 
-                        // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
-                        let stopPx;
-                        // stopPx = Math.round(price * (1 + bitMEXSettings['percentTakeProfit'] / 100));
-                        stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
-                        bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
-                            console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
-                        }, (error) => {
-                            console.error(error);
-                            orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);
-                        });
-
-                        // orderQty = Math.round(balance * bitMEXSettings['percentStopLoss']);
-                        // stopPx = Math.round(price * (1 - bitMEXSettings['percentStopLoss'] / 100));
-                        stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
-                        bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
-                            console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
-                        }, (error) => {
-                            console.error(error);
-                            orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);
-                        });
+                        // // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
+                        // let stopPx;
+                        // // stopPx = Math.round(price * (1 + bitMEXSettings['percentTakeProfit'] / 100));
+                        // stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
+                        // bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                        //     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
+                        // }, (error) => {
+                        //     console.error(error);
+                        //     orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);
+                        // });
+                        //
+                        // // orderQty = Math.round(balance * bitMEXSettings['percentStopLoss']);
+                        // // stopPx = Math.round(price * (1 - bitMEXSettings['percentStopLoss'] / 100));
+                        // stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
+                        // bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                        //     console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
+                        // }, (error) => {
+                        //     console.error(error);
+                        //     orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);
+                        // });
                     }, (error) => {
                         console.error(error);
                         orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);

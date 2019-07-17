@@ -1,13 +1,15 @@
 import config, {dbTblName} from '../core/config';
 import dbConn from '../core/dbConn';
-import {BitMEXApi} from '../core/BitmexApi';
-import sprintfJs from 'sprintf-js';
+import {BitMEXApi, POST} from '../core/BitmexApi';
+import sprintfJs, {sprintf} from 'sprintf-js';
 import {DELETE} from "../core/BitmexApi";
+import strings from '../core/strings';
 import request from "request";
 
 let service = {
     ioServer: undefined,
     // clients: [],
+    accounts: {},
     wallets: {},
     positions: {},
     orders: {},
@@ -191,6 +193,11 @@ let service = {
                         }
                     });
                     service.positions[value.accountId] = symbols;
+                    service.accounts[value.accountId] = {
+                        testnet: value.testnet,
+                        apiKeyID: value.apiKeyID,
+                        apiKeySecret: value.apiKeySecret,
+                    }
                 });
 
 
@@ -330,11 +337,177 @@ let service = {
                 service.bitmexSocket.emit('restartBitmex');
             });
         });
+
+        monitorPosition();
     },
 
     remakeAllSockets: () => {
         service.ioServer.emit('remakeAllSocket');
     }
+};
+
+let monitorTimerId = null;
+let monitorTimerInterval = 10000;
+const monitorPosition = () => {
+    if (monitorTimerId) {
+        clearTimeout(monitorTimerId);
+    }
+    monitorTimerId = setTimeout(monitorPosition, monitorTimerInterval);
+    Object.entries(service.positions).forEach(entry => {
+        let accountId = entry[0];
+        let symbols = entry[1];
+        let account = service.accounts[accountId];
+        let orders = service.orders[accountId];
+        if (!orders) {
+            return;
+        }
+        let symbol = 'XBTUSD';
+        let bitMEXApi = new BitMEXApi(account.testnet, account.apiKeyID, account.apiKeySecret);
+        if (symbols.length === 0 && orders.length > 0) {
+            // console.log(value.accountId, strings.allOrdersAreCanceledDueToNoPosition);
+            bitMEXApi.orderAll({symbol: symbol});
+            return;
+        }
+        let TPFlag = false;
+        let SLFlag = false;
+        for (let order of orders) {
+            if (order.ordType == 'Stop') {
+                if (SLFlag == true) {
+                    bitMEXApi.order(DELETE, {orderID: order.orderID});
+                }
+                SLFlag = true;
+            } else if (order.ordType == 'MarketIfTouched') {
+                if (TPFlag == true) {
+                    bitMEXApi.order(DELETE, {orderID: order.orderID});
+                }
+                TPFlag = true;
+            }
+        }
+        if (!TPFlag) {
+            console.log(accountId, 'takeProfitOrderProc');
+            takeProfitOrderProc(bitMEXApi, symbol)
+        }
+        if (!SLFlag) {
+            console.log(accountId, 'stopLossOrderProc');
+            stopLossOrderProc(bitMEXApi, symbol)
+        }
+    });
+};
+
+const stopLossOrderProc = (bitMEXApi, symbol) => {
+    if (!(bitMEXApi instanceof BitMEXApi)) {
+        console.error('BitMEXApi is invalid');
+        return false;
+    }
+
+    const sideSell = 'Sell';
+    const sideBuy = 'Buy';
+
+    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
+    dbConn.query(sql, null, (error, rows, fields) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        let bitMEXSettings = {
+            minWallet: 0,
+            percentStopLoss: 5,
+            percentTakeProfit: 5,
+            percentWallet: 0,
+            profitPerTrade: 5,
+        };
+        for (let row of rows) {
+            bitMEXSettings[row['property']] = row['value'];
+        }
+        // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
+        bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
+            // console.log('wallet', JSON.stringify(wallet));
+            const satoshi2Bitcoin = 100000000;
+            let walletAmount = wallet['amount'] / satoshi2Bitcoin;
+            if (walletAmount < bitMEXSettings['minWallet']) {
+                console.error('Wallet amount is lower than minimum amount of wallet');
+                return;
+            }
+            bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
+                // console.log('trades', JSON.stringify(trades[0]));
+                const price = trades[0]['price'];
+                const balance = walletAmount * price;
+
+                let orderQty;
+                orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
+
+                // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
+                let stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
+                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                    // console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
+                }, (error) => {
+                    console.error(error);
+                });
+            }, (error) => {
+                console.error(error);
+            });
+        }, (error) => {
+            console.error(error);
+        });
+    });
+};
+
+const takeProfitOrderProc = (bitMEXApi, symbol) => {
+    if (!(bitMEXApi instanceof BitMEXApi)) {
+        console.error('BitMEXApi is invalid');
+        return false;
+    }
+
+    const sideSell = 'Sell';
+    const sideBuy = 'Buy';
+
+    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
+    dbConn.query(sql, null, (error, rows, fields) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        let bitMEXSettings = {
+            minWallet: 0,
+            percentStopLoss: 5,
+            percentTakeProfit: 5,
+            percentWallet: 0,
+            profitPerTrade: 5,
+        };
+        for (let row of rows) {
+            bitMEXSettings[row['property']] = row['value'];
+        }
+        // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
+        bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
+            // console.log('wallet', JSON.stringify(wallet));
+            const satoshi2Bitcoin = 100000000;
+            let walletAmount = wallet['amount'] / satoshi2Bitcoin;
+            if (walletAmount < bitMEXSettings['minWallet']) {
+                console.error('Wallet amount is lower than minimum amount of wallet');
+                return;
+            }
+            bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
+                // console.log('trades', JSON.stringify(trades[0]));
+                const price = trades[0]['price'];
+                const balance = walletAmount * price;
+
+                let orderQty;
+                orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
+
+                // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
+                let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
+                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                    // console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
+                }, (error) => {
+                    console.error(error);
+                });
+            }, (error) => {
+                console.error(error);
+            });
+        }, (error) => {
+            console.error(error);
+        });
+    });
 };
 
 module.exports = service;

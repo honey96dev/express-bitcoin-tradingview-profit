@@ -23,4 +23,5 @@ module.exports = {
     invalidParameters: 'Invalid Parameters',
     noStrategy: 'No strategy',
     strategyIsMismatch: 'Strategy is mismatch',
+    allOrdersAreCanceledDueToNoPosition: 'All orders are canceled due to no position',
 };
