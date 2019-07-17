@@ -175,7 +175,7 @@ let service = {
             const timestamp = new Date().toISOString();
             let sql = sprintfJs.sprintf("INSERT INTO `bitmex_log`(`timestamp`, `email`, `testnet`, `apiKeyID`, `apiKeySecret`, `isParent`, `message`) VALUES ('', '', '', '', '', '', '') ON DUPLICATE KEY UPDATE `email` = VALUES(`email`), `testnet` = VALUES(`testnet`), `apiKeyID` = VALUES(`apiKeyID`), `apiKeySecret` = VALUES(`apiKeySecret`), `isParent` = VALUES(`isParent`), `message` = VALUES(`message`);", timestamp, account.email, account.testnet, account.apiKeyID, account.apiKeySecret, account.isParent, 'Websocket reconnecting');
 
-            dbConn.query(sql);
+            // dbConn.query(sql);
             // dbConn.query(sql, null, (error, results, fields) => {});
             // account.socket.start();
         });
