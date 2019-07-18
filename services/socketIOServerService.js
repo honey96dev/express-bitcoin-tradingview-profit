@@ -353,6 +353,7 @@ const monitorPosition = () => {
         clearTimeout(monitorTimerId);
     }
     monitorTimerId = setTimeout(monitorPosition, monitorTimerInterval);
+    console.log('monitorPosition', 'start');
     Object.entries(service.positions).forEach(entry => {
         let accountId = entry[0];
         let symbols = entry[1];
@@ -394,8 +395,9 @@ const monitorPosition = () => {
             console.log(accountId, 'stopLossOrderProc');
             stopLossOrderProc(bitMEXApi, symbol)
         }
-        console.log(accountId, 'done');
+        console.log('monitorPosition', accountId, 'done');
     });
+    console.log('monitorPosition', 'end');
 };
 
 const stopLossOrderProc = (bitMEXApi, symbol) => {
