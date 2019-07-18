@@ -353,7 +353,7 @@ const monitorPosition = () => {
         clearTimeout(monitorTimerId);
     }
     monitorTimerId = setTimeout(monitorPosition, monitorTimerInterval);
-    console.log('monitorPosition', 'start');
+    console.log('monitorPosition', 'start', JSON.stringify(service.positions));
     Object.entries(service.positions).forEach(entry => {
         let accountId = entry[0];
         let symbols = entry[1];
