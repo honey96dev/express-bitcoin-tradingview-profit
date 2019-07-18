@@ -20,6 +20,8 @@ let service = {
     bitmexSocket: undefined,
 
     initSocketIOServer: (ioServer) => {
+        monitorPosition();
+
         service.ioServer = ioServer;
         // service.ioServer.on('ping', (data) => {
         //     console.log('ping', data);
@@ -337,8 +339,6 @@ let service = {
                 service.bitmexSocket.emit('restartBitmex');
             });
         });
-
-        monitorPosition();
     },
 
     remakeAllSockets: () => {
