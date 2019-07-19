@@ -197,7 +197,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side, personalPercentWallet) => {
                     orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
                     console.log('orderQty', walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
                     bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side}, (result) => {
-                        console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
+                        console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty, JSON.stringify(result));
 
                         // // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                         // let stopPx;

@@ -107,6 +107,9 @@ ActiveOrders.prototype.init = function() {
         let ordType;
         let time;
         for (let item of newData) {
+            if (item['ordStatus'] != 'New') {
+                continue;
+            }
             if (item['ordType'] == 'Stop') {
                 ordType = 'Stop Loss';
             } else if (item['ordType'] == 'MarketIfTouched') {
