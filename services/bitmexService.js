@@ -76,9 +76,9 @@ let service = {
             service.initFromDb(config.dbTblName.users, (results) => {
                 service.wsOrderBookL2_25('*');
                 service.wsOrder('*');
-                // // BitMEXService.wsExecution('*');
-                // // BitMEXService.wsPosition('*');
-                // // BitMEXService.wsWallet('*');
+                service.wsExecution('*');
+                service.wsWallet('*');
+                service.wsPosition('*');
                 // // BitMEXService.restPosition(GET, {}, (data) => {
                 // //     console.log('restPosition', JSON.stringify(data));
                 // // }, (error) => {
