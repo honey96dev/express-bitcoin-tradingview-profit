@@ -92,13 +92,13 @@ function BitMEXApi(testnet, apiKeyID, apiKeySecret) {
                 request(requestOptions, function (error, response, body) {
                     debug('request', new Date(), response.statusCode, requestOptions.method, requestOptions.url);
                     if (error || response.statusCode !== 200) {
-                        console.warn('request', error, body);
+                        console.warn('request', error, body, JSON.stringify(requestOptions));
                         if (typeof onRejected === 'function') {
                             onRejected(body);
                         }
 
                         const timestamp = new Date().toISOString();
-                        let sql = sprintfJs.sprintf("INSERT INTO `bitmex_log`(`timestamp`, `testnet`, `apiKeyID`, `apiKeySecret`, `message`) VALUES ('%s', '%d', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE `testnet` = VALUES(`testnet`), `apiKeyID` = VALUES(`apiKeyID`), `apiKeySecret` = VALUES(`apiKeySecret`), `message` = VALUES(`message`);", timestamp, self.testnet, self.apiKeyID, self.apiKeySecret, 'Bitmex API fail: ' + path);
+                        let sql = sprintfJs.sprintf("INSERT INTO `bitmex_log`(`timestamp`, `testnet`, `apiKeyID`, `apiKeySecret`, `message`) VALUES ('%s', '%d', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE `testnet` = VALUES(`testnet`), `apiKeyID` = VALUES(`apiKeyID`), `apiKeySecret` = VALUES(`apiKeySecret`), `message` = VALUES(`message`);", timestamp, self.testnet ? 1 : 0, self.apiKeyID, self.apiKeySecret, 'Bitmex API fail: ' + path);
                         console.log('sql-log', sql);
                         dbConn.query(sql);
 
@@ -135,13 +135,13 @@ function BitMEXApi(testnet, apiKeyID, apiKeySecret) {
             request(requestOptions, function (error, response, body) {
                 debug('request', new Date(), response.statusCode, requestOptions.method, requestOptions.url);
                 if (error || response.statusCode !== 200) {
-                    console.warn('request', error, body);
+                    console.warn('request', error, body, JSON.stringify(requestOptions));
                     if (typeof onRejected === 'function') {
                         onRejected(error);
                     }
 
                     const timestamp = new Date().toISOString();
-                    let sql = sprintfJs.sprintf("INSERT INTO `bitmex_log`(`timestamp`, `testnet`, `apiKeyID`, `apiKeySecret`, `message`) VALUES ('%s', '%d', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE `testnet` = VALUES(`testnet`), `apiKeyID` = VALUES(`apiKeyID`), `apiKeySecret` = VALUES(`apiKeySecret`), `message` = VALUES(`message`);", timestamp, self.testnet, self.apiKeyID, self.apiKeySecret, 'Bitmex API fail: ' + path);
+                    let sql = sprintfJs.sprintf("INSERT INTO `bitmex_log`(`timestamp`, `testnet`, `apiKeyID`, `apiKeySecret`, `message`) VALUES ('%s', '%d', '%s', '%s', '%s') ON DUPLICATE KEY UPDATE `testnet` = VALUES(`testnet`), `apiKeyID` = VALUES(`apiKeyID`), `apiKeySecret` = VALUES(`apiKeySecret`), `message` = VALUES(`message`);", timestamp, self.testnet ? 1 : 0, self.apiKeyID, self.apiKeySecret, 'Bitmex API fail: ' + path);
                     console.log('sql-log', sql);
                     dbConn.query(sql);
 

@@ -342,7 +342,7 @@ let service = {
             let idx;
             const cnt = orders.length - 1;
             for (let item of data) {
-                for (idx = cnt; idx >= 0; idx--) {
+                for (idx = cnt - 1; idx >= 0; idx--) {
                     if (item.orderID === orders[idx].orderID) {
                         if (item.ordStatus === 'Filled' || item.ordStatus === 'Canceled') {
                             orders.splice(idx, 1);

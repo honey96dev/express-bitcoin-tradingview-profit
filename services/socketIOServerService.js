@@ -178,6 +178,7 @@ let service = {
             });
 
             socket.on('positions', (data) => {
+                // console.log(data);
                 const json = JSON.parse(data);
 
                 service.positions = {};
@@ -372,35 +373,43 @@ const monitorPosition = () => {
             }
             return;
         }
+        // console.log('orders', accountId, JSON.stringify(orders));
         let TPFlag = false;
         let SLFlag = false;
         for (let order of orders) {
-            if (order.ordType == 'Stop') {
+            if (order.ordType == 'Stop' && order.ordStatus == 'New') {
+                if (order.orderQty != symbols[0]['currentQty']) {
+                    bitMEXApi.order(DELETE, {orderID: order.orderID});
+                }
                 if (SLFlag == true) {
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
                 }
                 SLFlag = true;
-            } else if (order.ordType == 'MarketIfTouched') {
+            } else if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'New') {
+                if (order.orderQty != symbols[0]['currentQty']) {
+                    bitMEXApi.order(DELETE, {orderID: order.orderID});
+                }
                 if (TPFlag == true) {
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
                 }
                 TPFlag = true;
             }
         }
+        // console.log('tp, sl', accountId, TPFlag, SLFlag);
         if (!TPFlag) {
-            console.log(accountId, 'takeProfitOrderProc');
-            takeProfitOrderProc(bitMEXApi, symbol)
+            // console.log(accountId, 'takeProfitOrderProc');
+            takeProfitOrderProc(bitMEXApi, symbol, accountId)
         }
         if (!SLFlag) {
-            console.log(accountId, 'stopLossOrderProc');
-            stopLossOrderProc(bitMEXApi, symbol)
+            // console.log(accountId, 'stopLossOrderProc');
+            stopLossOrderProc(bitMEXApi, symbol, accountId)
         }
         console.log('monitorPosition', accountId, 'done');
     });
     console.log('monitorPosition', 'end');
 };
 
-const stopLossOrderProc = (bitMEXApi, symbol) => {
+const stopLossOrderProc = (bitMEXApi, symbol, accountId) => {
     if (!(bitMEXApi instanceof BitMEXApi)) {
         console.error('BitMEXApi is invalid');
         return false;
@@ -409,7 +418,7 @@ const stopLossOrderProc = (bitMEXApi, symbol) => {
     const sideSell = 'Sell';
     const sideBuy = 'Buy';
 
-    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
+    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s' UNION SELECT 'personalPercentWallet' `property`, `percentWallet` FROM `%s` WHERE `id` = '%d';", dbTblName.bitmex_settings, 'strategy', dbTblName.users, accountId);
     dbConn.query(sql, null, (error, rows, fields) => {
         if (error) {
             console.error(error);
@@ -425,6 +434,9 @@ const stopLossOrderProc = (bitMEXApi, symbol) => {
         for (let row of rows) {
             bitMEXSettings[row['property']] = row['value'];
         }
+        if (!!bitMEXSettings['personalPercentWallet'] && bitMEXSettings['personalPercentWallet'] > 0) {
+            bitMEXSettings['percentWallet'] = bitMEXSettings['personalPercentWallet'];
+        }
         // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
         bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
             // console.log('wallet', JSON.stringify(wallet));
@@ -435,12 +447,11 @@ const stopLossOrderProc = (bitMEXApi, symbol) => {
                 return;
             }
             bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
-                // console.log('trades', JSON.stringify(trades[0]));
+                // let orderQty = service.positions[accountId][0]['currentQty'];
+                let orderQty = service.positions[accountId][0]['currentQty'];
+                // console.log('positions', accountId, service.positions);
                 const price = trades[0]['price'];
                 const balance = walletAmount * price;
-
-                let orderQty;
-                orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
 
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 let stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
@@ -458,7 +469,7 @@ const stopLossOrderProc = (bitMEXApi, symbol) => {
     });
 };
 
-const takeProfitOrderProc = (bitMEXApi, symbol) => {
+const takeProfitOrderProc = (bitMEXApi, symbol, accountId) => {
     if (!(bitMEXApi instanceof BitMEXApi)) {
         console.error('BitMEXApi is invalid');
         return false;
@@ -467,7 +478,7 @@ const takeProfitOrderProc = (bitMEXApi, symbol) => {
     const sideSell = 'Sell';
     const sideBuy = 'Buy';
 
-    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
+    let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s' UNION SELECT 'personalPercentWallet' `property`, `percentWallet` FROM `%s` WHERE `id` = '%d';", dbTblName.bitmex_settings, 'strategy', dbTblName.users, accountId);
     dbConn.query(sql, null, (error, rows, fields) => {
         if (error) {
             console.error(error);
@@ -483,6 +494,9 @@ const takeProfitOrderProc = (bitMEXApi, symbol) => {
         for (let row of rows) {
             bitMEXSettings[row['property']] = row['value'];
         }
+        if (!!bitMEXSettings['personalPercentWallet'] && bitMEXSettings['personalPercentWallet'] > 0) {
+            bitMEXSettings['percentWallet'] = bitMEXSettings['personalPercentWallet'];
+        }
         // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
         bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
             // console.log('wallet', JSON.stringify(wallet));
@@ -493,12 +507,10 @@ const takeProfitOrderProc = (bitMEXApi, symbol) => {
                 return;
             }
             bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
+                let orderQty = service.positions[accountId][0]['currentQty'];
                 // console.log('trades', JSON.stringify(trades[0]));
                 const price = trades[0]['price'];
                 const balance = walletAmount * price;
-
-                let orderQty;
-                orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
 
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);

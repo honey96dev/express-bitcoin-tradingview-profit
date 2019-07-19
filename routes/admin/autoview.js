@@ -95,12 +95,12 @@ const indexProc = (req, res, next) => {
                                 continue;
                             } else if (currentQty < 0 && position['isOpen']) {
                                 bitMEXApi.orderClosePosition({symbol: symbol}, (result) => {
-                                    orderProc(bitMEXApi, ordType, symbol, side);
+                                    orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                                 }, (error) => {
                                     console.error('orderClosePosition', testnet, apiKeyID, apiKeySecret, error);
                                 })
                             } else {
-                                orderProc(bitMEXApi, ordType, symbol, side);
+                                orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                             }
                         } else if (action === 'sell') {
                             ordType = 'Market';
@@ -110,12 +110,12 @@ const indexProc = (req, res, next) => {
                                 continue;
                             } else if (currentQty > 0 && position['isOpen']) {
                                 bitMEXApi.orderClosePosition({symbol: symbol}, (result) => {
-                                    orderProc(bitMEXApi, ordType, symbol, side);
+                                    orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                                 }, (error) => {
                                     console.error('orderClosePosition', testnet, apiKeyID, apiKeySecret, error);
                                 })
                             } else {
-                                orderProc(bitMEXApi, ordType, symbol, side);
+                                orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                             }
                         }
                     }
@@ -146,7 +146,7 @@ const indexProc = (req, res, next) => {
 
 let orderTimeoutId = null;
 const orderTimeoutDelay = 1000;
-const orderProc = (bitMEXApi, ordType, symbol, side) => {
+const orderProc = (bitMEXApi, ordType, symbol, side, personalPercentWallet) => {
     if (orderTimeoutId) {
         clearTimeout(orderTimeoutId);
     }
@@ -164,7 +164,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
         dbConn.query(sql, null, (error, rows, fields) => {
             if (error) {
                 console.error(error);
-                orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side);
+                orderTimeoutId = setTimeout(orderProc, orderTimeoutDelay, bitMEXApi, ordType, symbol, side, personalPercentWallet);
                 return;
             }
             let bitMEXSettings = {
@@ -172,10 +172,12 @@ const orderProc = (bitMEXApi, ordType, symbol, side) => {
                 percentStopLoss: 5,
                 percentTakeProfit: 5,
                 percentWallet: 0,
-                profitPerTrade: 5,
             };
             for (let row of rows) {
                 bitMEXSettings[row['property']] = row['value'];
+            }
+            if (!!personalPercentWallet && personalPercentWallet > 0) {
+                bitMEXSettings['percentWallet'] = personalPercentWallet;
             }
             // console.log('BitMEX-settings', JSON.stringify(bitMEXSettings));
             bitMEXApi.userWallet({currency: 'XBt'}, (wallet) => {
