@@ -377,10 +377,14 @@ const monitorPosition = () => {
         let TPFlag = false;
         let SLFlag = false;
         let orderQty;
+        // let orderSide;
         let positionQty;
+        // let positionSign;
         for (let order of orders) {
-            orderQty = Math.abs(parseFloat(order.orderQty));
-            positionQty = Math.abs(parseFloat(symbols[0]['currentQty']));
+            orderQty = Math.abs(order.orderQty);
+            // orderSide = order.side;
+            // positionSign = Math.sign(symbols[0]['currentQty']);
+            positionQty = Math.abs(symbols[0]['currentQty']);
             if (order.ordType == 'Stop' && order.ordStatus == 'New') {
                 if (orderQty !== positionQty) {
                     console.log('S/L cancel due to orderQty', orderQty, positionQty);
@@ -457,14 +461,16 @@ const stopLossOrderProc = (bitMEXApi, symbol, accountId) => {
             bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
                 // let orderQty = service.positions[accountId][0]['currentQty'];
                 let orderQty = service.positions[accountId][0]['currentQty'];
+                const sign = Math.sign(orderQty);
+                orderQty = Math.abs(orderQty);
                 // console.log('positions', accountId, service.positions);
                 const price = trades[0]['price'];
                 const balance = walletAmount * price;
 
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 // let stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
-                let stopPx = Math.round(price * (1 - bitMEXSettings['percentStopLoss'] / 100));
-                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                let stopPx = Math.round(price * (1 - sign * bitMEXSettings['percentStopLoss'] / 100));
+                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sign > 0 ? sideSell : sideBuy, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
                 }, (error) => {
                     console.error(error);
@@ -517,14 +523,16 @@ const takeProfitOrderProc = (bitMEXApi, symbol, accountId) => {
             }
             bitMEXApi.trade({symbol: symbol, side: 'Buy', reverse: true}, (trades) => {
                 let orderQty = service.positions[accountId][0]['currentQty'];
+                const sign = Math.sign(orderQty);
+                orderQty = Math.abs(orderQty);
                 // console.log('trades', JSON.stringify(trades[0]));
                 const price = trades[0]['price'];
                 const balance = walletAmount * price;
 
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 // let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
-                let stopPx = Math.round(price * (1 + bitMEXSettings['percentTakeProfit'] / 100));
-                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sideSell, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                let stopPx = Math.round(price * (1 + sign * bitMEXSettings['percentTakeProfit'] / 100));
+                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sign > 0 ? sideSell : sideBuy, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
                     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 }, (error) => {
                     console.error(error);
