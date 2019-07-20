@@ -24,4 +24,8 @@ module.exports = {
     noStrategy: 'No strategy',
     strategyIsMismatch: 'Strategy is mismatch',
     allOrdersAreCanceledDueToNoPosition: 'All orders are canceled due to no position',
+    allBotsAreStopped: 'All bots are stopped',
+    allBotsAreStarted: 'All bots are started',
+    noActiveBots: 'No Active Bots',
+    allPositionsAreClosed: 'All positions are closed',
 };

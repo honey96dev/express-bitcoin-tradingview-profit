@@ -149,18 +149,48 @@ Settings.prototype.init = function() {
     });
 
     $('#restartBots').click(function () {
-        let section = $('#restartBotsModalBody');
+        let section = $('#manageBotsModalBody');
         section.find('.alert').remove();
 
-        $('#restartBotsModal').modal('show');
+        $('#manageBotsForm').attr('action', self.uriRoot + 'settings/restart-bots');
+        $('#manageBotsTitle').html('Restart Bots');
+        $('#manageBotsMessage1').html('Do you want to restart bots?');
+        $('#manageBotsMessage2').html('If you restart bots very frequently, you may be baned from BitMEX server.');
+        // $('#manageBotsButton').html('Restart');
+        $('#manageBotsModal').modal('show');
     });
 
-    $('#restartBotsButton').click(function () {
+    $('#stopBots').click(function () {
+        let botsSwitch = $('#botSwitch').val();
+        let section = $('#manageBotsModalBody');
+        section.find('.alert').remove();
+
+        $('#manageBotsForm').attr('action', self.uriRoot + 'settings/toggle-bots');
+        $('#manageBotsTitle').html(botsSwitch == 0 ? 'Stop Bots' : 'Start Bots');
+        $('#manageBotsMessage1').html(botsSwitch == 0 ? 'Do you want to stop bots?' : 'Do you want to start bots?');
+        $('#manageBotsMessage2').html('');
+        // $('#manageBotsButton').html('Stop');
+        $('#manageBotsModal').modal('show');
+    });
+
+    $('#closePositions').click(function () {
+        let section = $('#manageBotsModalBody');
+        section.find('.alert').remove();
+
+        $('#manageBotsForm').attr('action', self.uriRoot + 'settings/close-positions');
+        $('#manageBotsTitle').html('Close All Positions');
+        $('#manageBotsMessage1').html('Do you want to sell all positions?');
+        $('#manageBotsMessage2').html('');
+        // $('#manageBotsButton').html('Perform');
+        $('#manageBotsModal').modal('show');
+    });
+
+    $('#manageBotsButton').click(function () {
         let btn = $(this);
-        let section = $('#restartBotsModalBody');
+        let form = $('#manageBotsForm');
+        let section = $('#manageBotsModalBody');
         btn.attr('disabled', true);
-        $.ajax({
-            url: self.uriRoot + 'settings/restart-bots',
+        form.ajaxSubmit({
             method: 'POST',
             dataType: 'json',
             success: function (response, status, xhr, $form) {

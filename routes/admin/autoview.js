@@ -26,8 +26,8 @@ const indexProc = (req, res, next) => {
     let time = new Date();
     time = sprintf("%04d-%02d-%02d %02d:%02d:%02d", time.getFullYear(), time.getMonth() + 1, time.getDate(), time.getHours(), time.getMinutes(), time.getSeconds());
 
-    let sql = sprintf("SELECT `value` FROM `%s` WHERE `property` = '%s';", dbTblName.bitmex_settings, 'strategy');
-    dbConn.query(sql, null, (error, strategies, fields) => {
+    let sql = sprintf("SELECT `property`, `value` FROM `%s`;", dbTblName.bitmex_settings);
+    dbConn.query(sql, null, (error, rows, fields) => {
         if (error) {
             console.log(error);
             sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.failedDueToUnknownServerError);
@@ -39,7 +39,12 @@ const indexProc = (req, res, next) => {
             return;
         }
 
-        if (strategies.length === 0) {
+        let settings = {};
+        for (let row of rows) {
+            settings[row['property']] = row['value'];
+        }
+
+        if (typeof settings['strategy'] == 'undefined') {
             console.error(strings.noStrategy);
             sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.noStrategy);
             dbConn.query(sql, null, (error, result, fields) => {});
@@ -48,13 +53,22 @@ const indexProc = (req, res, next) => {
                 message: strings.noStrategy,
             });
             return;
-        } else if (strategies[0]['value'] != strategy) {
+        } else if (settings['strategy'] != strategy) {
             console.error(strings.strategyIsMismatch);
             sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.strategyIsMismatch);
             dbConn.query(sql, null, (error, result, fields) => {});
             res.status(200).send({
                 result: strings.error,
                 message: strings.strategyIsMismatch,
+            });
+            return;
+        } else if (!settings['botSwitch'] || settings['botSwitch'] == 0) {
+            console.error(strings.noActiveBots);
+            sql = sprintf("INSERT INTO `%s`(`time`, `text`, `perform`) VALUES('%s', '%s', '%s');", dbTblName.autoview_data, time, json, strings.noActiveBots);
+            dbConn.query(sql, null, (error, result, fields) => {});
+            res.status(200).send({
+                result: strings.error,
+                message: strings.noActiveBots,
             });
             return;
         }

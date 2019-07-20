@@ -39,9 +39,8 @@ const indexProc = (req, res, next) => {
 };
 
 const activeBotsProc = (req, res, next) => {
-    let sql = sprintf("SELECT A.* FROM `%s` A WHERE A.activeTrading = '1';", dbTblName.users);
-
-    dbConn.query(sql, null, (error, result, fields) => {
+    let sql = sprintf("SELECT `property`, `value` FROM `%s` WHERE `property` = '%s';", dbTblName.bitmex_settings, 'botSwitch');
+    dbConn.query(sql, null, (error, rows, fields) => {
         if (error) {
             console.log(error);
 
@@ -50,13 +49,35 @@ const activeBotsProc = (req, res, next) => {
                 data: [],
                 error: error,
             });
-        } else {
+            return;
+        }
+        if (rows.length === 0 || rows[0]['value'] == 0) {
             res.status(200).send({
                 result: strings.success,
-                data: result,
-            })
+                data: [],
+            });
+            return;
         }
+
+        sql = sprintf("SELECT A.* FROM `%s` A WHERE A.activeTrading = '1';", dbTblName.users);
+        dbConn.query(sql, null, (error, result, fields) => {
+            if (error) {
+                console.log(error);
+
+                res.status(200).send({
+                    result: strings.error,
+                    data: [],
+                    error: error,
+                });
+            } else {
+                res.status(200).send({
+                    result: strings.success,
+                    data: result,
+                })
+            }
+        });
     });
+
 };
 
 const dailyProfitProc = (req, res, next) => {
@@ -85,7 +106,7 @@ const dailyProfitProc = (req, res, next) => {
 const dailyTradesProc = (req, res, next) => {
     let today = new Date();
     today = sprintf("%04d-%02d-%02d", today.getFullYear(), today.getMonth() + 1, today.getDate());
-    let sql = sprintf("SELECT * FROM `%s` WHERE `timestamp` LIKE '%s%s';", dbTblName.bitmex_orders, today, '%');
+    let sql = sprintf("SELECT * FROM `%s` WHERE `timestamp` LIKE '%s%s' AND `ordStatus` = '%s';", dbTblName.bitmex_orders, today, '%', 'Filled');
     // console.log('dailyTradesProc', sql);
     dbConn.query(sql, null, (error, result, fields) => {
         if (error) {

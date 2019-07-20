@@ -46,6 +46,8 @@ block mainContent
                         div.button-items
                             button#saveProperty.btn.btn-success.waves-effect.waves-light Save
                             button#restartBots.btn.btn-danger.waves-effect.waves-light Restart Bots
+                            button#stopBots.btn.btn-warning.waves-effect.waves-light=(data['botSwitch'] == 1 ? 'Stop All Bots' : 'Start All Bots')
+                            button#closePositions.btn.btn-info.waves-effect.waves-light Close All Positions
             .card.m-b-30
                 .card-body
                     h4.mt-0.header-title Account password
@@ -71,18 +73,19 @@ block mainContent
                                         input#password2.form-control(type="password" name="password2" required data-parsley-equalto="#password")
 
                         button#changePassword.btn.btn-success.waves-effect.waves-light Change
-    #restartBotsModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+    #manageBotsModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
         .modal-dialog.modal-dialog-centered(role='document')
-            form#restartBotsForm.modal-content(action!=uriRoot + 'settings/restart-bots')
+            form#manageBotsForm.modal-content(action!=uriRoot + 'settings/restart-bots')
+                input#botSwitch(type='hidden' name='botSwitch' value=(data['botSwitch'] == 1 ? 0 : 1))
                 .modal-header
-                    h5.modal-title Restart Bots
+                    h5#manageBotsTitle.modal-title Restart Bots
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') &times;
-                #restartBotsModalBody.modal-body
-                    p Do you want to restart bots?
-                    P If you restart bots very frequently, you may be baned from BitMEX server.
+                #manageBotsModalBody.modal-body
+                    p#manageBotsMessage1 Do you want to restart bots?
+                    P#manageBotsMessage2 If you restart bots very frequently, you may be baned from BitMEX server.
                 .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close
-                    button#restartBotsButton.btn.btn-danger(type='button') Restart
+                    button.btn.btn-secondary(type='button' data-dismiss='modal') No
+                    button#manageBotsButton.btn.btn-danger(type='button') Yes
         // end col
     // end row

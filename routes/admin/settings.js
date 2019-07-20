@@ -5,6 +5,7 @@ import myCrypto from '../../core/myCrypto';
 import strings from '../../core/strings';
 import {sprintf} from 'sprintf-js';
 import {BitMEXService} from '../../services/bitmexService';
+import {BitMEXApi, POST} from '../../core/BitmexApi';
 import config from "../../core/config";
 import SocketIOClient from "socket.io-client";
 
@@ -156,9 +157,79 @@ const restartBotsProc = (req, res, next) => {
     // });
 };
 
+const toggleBotsProc = (req, res, next) => {
+    const params = req.body;
+    const botSwitch = params.botSwitch;
+    if (!botSwitch) {
+        res.status(200).send({
+            result: strings.error,
+            message: strings.invalidParameters,
+        });
+        return;
+    }
+    let sql = sprintf("INSERT INTO `%s` VALUES('%s', '%s') ON DUPLICATE KEY UPDATE `property` = VALUES(`property`), `value` = VALUES(`value`);", dbTblName.bitmex_settings, 'botSwitch', botSwitch);
+    dbConn.query(sql, null, (error, result, fields) => {
+        if (error) {
+            res.status(200).send({
+                result: strings.error,
+                message: strings.unknownServerError,
+            });
+        } else {
+            res.status(200).send({
+                result: strings.success,
+                message: botSwitch == 1 ? strings.allBotsAreStarted : strings.allBotsAreStopped,
+            });
+        }
+    });
+};
+
+const closeAllPosition = (req, res, next) => {
+    const params = req.body;
+    let sql = sprintf("SELECT * FROM `%s` WHERE `bitmexApikey` != '' AND `bitmexApikeySecret` != '';", dbTblName.users);
+    dbConn.query(sql, null, (error, result, fields) => {
+        if (error) {
+            console.error(error);
+            res.status(200).send({
+                result: strings.error,
+                message: strings.unknownServerError,
+            });
+            return;
+        }
+        const symbol = 'XBTUSD';
+        for (let user of result) {
+            let bitMEXApi = new BitMEXApi(user.bitmexTestnet, user.bitmexApikey, user.bitmexApikeySecret);
+            bitMEXApi.position({symbol: symbol}, (positions) => {
+                for (let position of positions) {
+                    // console.log('position', JSON.stringify(position));
+                    let data = {
+                        symbol: symbol,
+                        side: 'Sell',
+                        ordType: 'Market',
+                        // orderQty: position.currentQty,
+                        execInst: 'Close',
+                    };
+                    bitMEXApi.order(POST, data, (result) => {
+                        console.log('closePositionResult', JSON.stringify(result));
+                    }, (error) => {
+                        console.error('closePositionResult', JSON.stringify(error));
+                    });
+                }
+            }, (error) => {
+                console.error(error);
+            });
+        }
+        res.status(200).send({
+            result: strings.success,
+            message: strings.allPositionsAreClosed,
+        });
+    });
+};
+
 router.get('/', indexProc);
 router.post('/properties', savePropertiesProc);
 router.post('/password', changePasswordProc);
 router.post('/restart-bots', restartBotsProc);
+router.post('/toggle-bots', toggleBotsProc);
+router.post('/close-positions', closeAllPosition);
 
 module.exports = router;
