@@ -377,16 +377,18 @@ const monitorPosition = () => {
         let TPFlag = false;
         let SLFlag = false;
         let orderQty;
-        // let orderSide;
+        let orderSide;
         let positionQty;
-        // let positionSign;
+        let positionSign;
+        let cancelFlag;
         for (let order of orders) {
             orderQty = Math.abs(order.orderQty);
-            // orderSide = order.side;
-            // positionSign = Math.sign(symbols[0]['currentQty']);
+            orderSide = order.side;
+            positionSign = Math.sign(symbols[0]['currentQty']);
             positionQty = Math.abs(symbols[0]['currentQty']);
+            cancelFlag = orderQty !== positionQty || (orderSide == 'Buy' && positionSign > 0) || (orderSide == 'Sell' && positionSign < 0);
             if (order.ordType == 'Stop' && order.ordStatus == 'New') {
-                if (orderQty !== positionQty) {
+                if (cancelFlag) {
                     console.log('S/L cancel due to orderQty', orderQty, positionQty);
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
                 }
@@ -396,7 +398,7 @@ const monitorPosition = () => {
                 }
                 SLFlag = true;
             } else if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'New') {
-                if (orderQty !== positionQty) {
+                if (cancelFlag) {
                     console.log('T/P cancel due to orderQty', orderQty, positionQty);
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
                 }
