@@ -367,7 +367,14 @@ const monitorPosition = () => {
         let symbol = 'XBTUSD';
         let bitMEXApi = new BitMEXApi(account.testnet, account.apiKeyID, account.apiKeySecret);
         if (symbols.length === 0) {
-            if (orders.length > 0) {
+            let flag = false;
+            for (let order of orders) {
+                if (order.ordStatus == 'New') {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag > 0) {
                 console.log(accountId, strings.allOrdersAreCanceledDueToNoPosition);
                 bitMEXApi.orderAll({symbol: symbol});
             }
