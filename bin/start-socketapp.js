@@ -18,6 +18,7 @@ if (cluster.isWorker) {
 
     BitMEXService.initFromDb(config.dbTblName.users, () => {
         BitMEXService.wsOrder('XBTUSD');
+        BitMEXService.wsTrade('XBTUSD');
         BitMEXService.wsOrderBookL2_25('XBTUSD');
         BitMEXService.wsExecution('XBTUSD');
         BitMEXService.wsWallet('*');

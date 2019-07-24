@@ -18,6 +18,7 @@ let service = {
     positionsClientSockets: [],
     ordersClientSockets: [],
     bitmexSocket: undefined,
+    xbtUsdPrice: 0,
 
     initSocketIOServer: (ioServer) => {
         monitorPosition();
@@ -236,7 +237,9 @@ let service = {
                             order.timestamp,
                             key,
                             order.ordType,
+                            order.side,
                             order.orderQty,
+                            service.xbtUsdPrice,
                             order.stopPx,
                             order.ordStatus,
                         ]);
@@ -277,7 +280,8 @@ let service = {
                         // }
                     }
                     if (dbValues.length > 0) {
-                        let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `orderQty`, `stopPx`, `ordStatus`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`);", dbTblName.bitmex_orders);
+                        let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `side`, `orderQty`, `price`, `stopPx`, `ordStatus`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `side` = VALUES(`side`), `orderQty` = VALUES(`orderQty`), `price` = VALUES(`price`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`);", dbTblName.bitmex_orders);
+                        // console.log('order', sql, JSON.stringify(dbValues));
                         dbConn.query(sql, [dbValues], (error, result, fields) => {
                             if (error) {
                                 console.log(error);
@@ -334,6 +338,13 @@ let service = {
                         console.log(data);
                     });
                 });
+            });
+
+            socket.on('trade', (data) => {
+                data = JSON.parse(data);
+                if (data instanceof Array && data.length > 0) {
+                    service.xbtUsdPrice = data[0]['price'];
+                }
             });
 
             socket.on('restartBitmex', (data) => {
@@ -479,7 +490,14 @@ const stopLossOrderProc = (bitMEXApi, symbol, accountId) => {
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 // let stopPx = Math.round(price - balance * bitMEXSettings['percentStopLoss']);
                 let stopPx = Math.round(price * (1 - sign * bitMEXSettings['percentStopLoss'] / 100));
-                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sign > 0 ? sideSell : sideBuy, ordType: "Stop", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                bitMEXApi.order(POST, {
+                    symbol: symbol,
+                    orderQty: orderQty,
+                    side: sign > 0 ? sideSell : sideBuy,
+                    ordType: "Stop",
+                    execInst: "Close,LastPrice",
+                    stopPx: stopPx
+                }, (result) => {
                     console.log('Stop Loss', walletAmount, price, stopPx, bitMEXSettings['percentStopLoss'], orderQty);
                 }, (error) => {
                     console.error(error);
@@ -541,7 +559,14 @@ const takeProfitOrderProc = (bitMEXApi, symbol, accountId) => {
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 // let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
                 let stopPx = Math.round(price * (1 + sign * bitMEXSettings['percentTakeProfit'] / 100));
-                bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, side: sign > 0 ? sideSell : sideBuy, ordType: "MarketIfTouched", execInst: "Close,LastPrice", stopPx: stopPx}, (result) => {
+                bitMEXApi.order(POST, {
+                    symbol: symbol,
+                    orderQty: orderQty,
+                    side: sign > 0 ? sideSell : sideBuy,
+                    ordType: "MarketIfTouched",
+                    execInst: "Close,LastPrice",
+                    stopPx: stopPx
+                }, (result) => {
                     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 }, (error) => {
                     console.error(error);

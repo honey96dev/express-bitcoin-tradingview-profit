@@ -43,6 +43,7 @@ let service = {
         service.ioClient.on('remakeAllSocket', (data) => {
             service.initFromDb(config.dbTblName.users, () => {
                 service.wsOrder('XBTUSD');
+                service.wsTrade('XBTUSD');
                 service.wsOrderBookL2_25('XBTUSD');
                 service.wsExecution('XBTUSD');
                 service.wsWallet('*');
@@ -74,11 +75,12 @@ let service = {
         service.ioClient.on('restartBitmex', (data) => {
             console.log('restartBitmex');
             service.initFromDb(config.dbTblName.users, (results) => {
-                service.wsOrderBookL2_25('*');
-                service.wsOrder('*');
-                service.wsExecution('*');
+                service.wsOrder('XBTUSD');
+                service.wsTrade('XBTUSD');
+                service.wsOrderBookL2_25('XBTUSD');
+                service.wsExecution('XBTUSD');
                 service.wsWallet('*');
-                service.wsPosition('*');
+                service.wsPosition('XBTUSD');
                 // // BitMEXService.restPosition(GET, {}, (data) => {
                 // //     console.log('restPosition', JSON.stringify(data));
                 // // }, (error) => {
@@ -160,6 +162,8 @@ let service = {
                 const table = data.table;
                 if (table === 'order') {
                     service.onWsOrder(data.action, data.data, account);
+                } else if (table === 'trade') {
+                    service.onWsTrade(data.action, data.data);
                 } else if (table === 'orderBookL2_25') {
                     service.onWsOrderBookL2_25(data.action, data.data, account);
                 } else if (table === 'position') {
@@ -269,6 +273,10 @@ let service = {
         }
     },
 
+    wsTrade: (symbol) => {
+        service.wsSubscribe('trade', symbol);
+    },
+
     wsOrderBookL2_25: (symbol) => {
         service.wsSubscribe('orderBookL2_25', symbol);
     },
@@ -355,6 +363,12 @@ let service = {
 
         if (!!service.ioClient && service.ioClient.connected) {
             service.ioClient.emit('orders', map_to_json(service.orders));
+        }
+    },
+
+    onWsTrade: (action, data) => {
+        if (!!service.ioClient && service.ioClient.connected) {
+            service.ioClient.emit('trade', JSON.stringify(data));
         }
     },
 
