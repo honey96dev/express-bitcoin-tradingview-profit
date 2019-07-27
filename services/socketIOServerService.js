@@ -242,6 +242,7 @@ let service = {
                             service.xbtUsdPrice,
                             order.stopPx,
                             order.ordStatus,
+                            order.text,
                         ]);
                         //
                         // if (order.ordType == 'Stop' && order.ordStatus == 'Filled') {
