@@ -280,7 +280,7 @@ let service = {
                         // }
                     }
                     if (dbValues.length > 0) {
-                        let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `side`, `orderQty`, `price`, `stopPx`, `ordStatus`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `side` = VALUES(`side`), `orderQty` = VALUES(`orderQty`), `price` = VALUES(`price`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`);", dbTblName.bitmex_orders);
+                        let sql = sprintfJs.sprintf("INSERT INTO `%s`(`orderID`, `timestamp`, `userId`, `ordType`, `side`, `orderQty`, `price`, `stopPx`, `ordStatus`, `text`) VALUES ? ON DUPLICATE KEY UPDATE `timestamp` = VALUES(`timestamp`), `userId` = VALUES(`userId`), `ordType` = VALUES(`ordType`), `side` = VALUES(`side`), `orderQty` = VALUES(`orderQty`), `price` = VALUES(`price`), `stopPx` = VALUES(`stopPx`), `ordStatus` = VALUES(`ordStatus`), `text` = VALUES(`text`);", dbTblName.bitmex_orders);
                         // console.log('order', sql, JSON.stringify(dbValues));
                         dbConn.query(sql, [dbValues], (error, result, fields) => {
                             if (error) {

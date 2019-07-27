@@ -28,4 +28,6 @@ module.exports = {
     allBotsAreStarted: 'All bots are started',
     noActiveBots: 'No Active Bots',
     allPositionsAreClosed: 'All positions are closed',
+
+    botOrderMark: 'bot-order-marker',
 };

@@ -132,7 +132,17 @@ const indexProc = (req, res, next) => {
                                 orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                             }
                         }
+                        return;
                     }
+
+                    if (action === 'buy') {
+                        ordType = 'Market';
+                        side = 'Buy';
+                    } else if (action === 'sell') {
+                        ordType = 'Market';
+                        side = 'Sell';
+                    }
+                    orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                 }, (error) => {
                     console.error('position', testnet, apiKeyID, apiKeySecret, error);
                 });
@@ -173,7 +183,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side, personalPercentWallet) => {
     const sideBuy = 'Buy';
 
     bitMEXApi.orderAll({symbol: symbol}, (result) => {
-
+        console.log('orderAll', JSON.stringify(result));
         let sql = sprintf("SELECT * FROM `%s` WHERE `property` != '%s';", dbTblName.bitmex_settings, 'strategy');
         dbConn.query(sql, null, (error, rows, fields) => {
             if (error) {
@@ -210,7 +220,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side, personalPercentWallet) => {
                     let orderQty;
                     orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
                     console.log('orderQty', walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
-                    bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side}, (result) => {
+                    bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side, text: strings.botOrderMark}, (result) => {
                         console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty, JSON.stringify(result));
 
                         // // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
