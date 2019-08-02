@@ -218,7 +218,7 @@ let service = {
 
             service.accounts.push(account);
 
-            account.renewSocketTimeoutId = setTimeout(service.renewSocket, 500 * idx++, account);
+            account.renewSocketTimeoutId = setTimeout(service.renewSocket, 1000 * idx++, account);
         }
     },
 
