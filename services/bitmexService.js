@@ -192,6 +192,7 @@ let service = {
     },
 
     init: (configs) => {
+        console.log('init', JSON.stringify(configs));
         for (let account of service.accounts) {
             if (account.renewSocketTimeoutId) {
                 clearTimeout(account.renewSocketTimeoutId);
