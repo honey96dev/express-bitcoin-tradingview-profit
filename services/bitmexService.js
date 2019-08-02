@@ -202,6 +202,7 @@ let service = {
             delete account.socket;
         }
         service.accounts = [];
+        let idx = 0;
         for (let item of configs) {
             let account = {
                 id: item.id,
@@ -217,7 +218,7 @@ let service = {
 
             service.accounts.push(account);
 
-            account.renewSocketTimeoutId = setTimeout(service.renewSocket, 0, account);
+            account.renewSocketTimeoutId = setTimeout(service.renewSocket, 500 * idx++, account);
         }
     },
 
