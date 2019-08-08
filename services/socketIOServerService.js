@@ -381,7 +381,8 @@ const monitorPosition = () => {
         if (symbols.length === 0) {
             let flag = false;
             for (let order of orders) {
-                if (order.ordStatus == 'New') {
+                // if (order.ordStatus == 'New') {
+                if (order.ordStatus == 'New' && order.text != strings.botOrderMark) {
                     flag = true;
                     break;
                 }
@@ -401,6 +402,7 @@ const monitorPosition = () => {
         let positionSign;
         let cancelFlag;
         for (let order of orders) {
+            // if (order.text == strings.botOrderMark) continue;
             orderQty = Math.abs(order.orderQty);
             orderSide = order.side;
             positionSign = Math.sign(symbols[0]['currentQty']);
@@ -416,7 +418,9 @@ const monitorPosition = () => {
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
                 }
                 SLFlag = true;
-            } else if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'New') {
+            // } else if (order.ordType == 'Limit' && order.ordStatus == 'New') {
+            } else if (order.ordType == 'Limit' && order.ordStatus == 'New' && order.text != strings.botOrderMark) {
+            // } else if (order.ordType == 'MarketIfTouched' && order.ordStatus == 'New') {
                 if (cancelFlag) {
                     console.log('T/P cancel due to orderQty', orderQty, positionQty);
                     bitMEXApi.order(DELETE, {orderID: order.orderID});
@@ -512,7 +516,7 @@ const stopLossOrderProc = (bitMEXApi, symbol, accountId) => {
     });
 };
 
-const takeProfitOrderProc = (bitMEXApi, symbol, accountId) => {
+const takeProfitOrderProc = (bitMEXApi, symbol, accountId, flag) => {
     if (!(bitMEXApi instanceof BitMEXApi)) {
         console.error('BitMEXApi is invalid');
         return false;
@@ -560,14 +564,22 @@ const takeProfitOrderProc = (bitMEXApi, symbol, accountId) => {
                 // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
                 // let stopPx = Math.round(price + balance * bitMEXSettings['percentTakeProfit']);
                 let stopPx = Math.round(price * (1 + sign * bitMEXSettings['percentTakeProfit'] / 100));
-                bitMEXApi.order(POST, {
+                let body = {
                     symbol: symbol,
                     orderQty: orderQty,
                     side: sign > 0 ? sideSell : sideBuy,
-                    ordType: "MarketIfTouched",
-                    execInst: "Close,LastPrice",
-                    stopPx: stopPx
-                }, (result) => {
+                    // ordType: "MarketIfTouched",
+                    ordType: flag ? "MarketIfTouched" : "Limit",
+                    execInst: flag? "Close,LastPrice" : "Close",
+                    // price: stopPx,
+                    // stopPx: stopPx
+                };
+                if (flag) {
+                    body['stopPx'] = stopPx;
+                } else {
+                    body['price'] = stopPx;
+                }
+                bitMEXApi.order(POST, body, (result) => {
                     console.log('Take Profit Market', walletAmount, price, stopPx, bitMEXSettings['percentTakeProfit'], orderQty);
                 }, (error) => {
                     console.error(error);

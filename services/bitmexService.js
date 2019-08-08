@@ -220,7 +220,7 @@ let service = {
 
             account.renewSocketTimeoutId = setTimeout(service.renewSocket, 1000 * idx++, account);
         }
-        console.log('init', JSON.stringify(service.accounts));
+        // console.log('init', JSON.stringify(service.accounts));
     },
 
     initFromDb: (tableName, onFullfiled, onRejected) => {

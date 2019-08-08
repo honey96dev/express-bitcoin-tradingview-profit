@@ -102,7 +102,7 @@ const indexProc = (req, res, next) => {
                         currentQty = position['currentQty'];
                         // console.log(strategy, action, currentQty);
                         if (action === 'buy') {
-                            ordType = 'Market';
+                            ordType = 'Limit';
                             side = 'Buy';
                             if (currentQty > 0) {
                                 console.log('Ignore buy due to long position');
@@ -117,7 +117,7 @@ const indexProc = (req, res, next) => {
                                 orderProc(bitMEXApi, ordType, symbol, side, user.percentWallet);
                             }
                         } else if (action === 'sell') {
-                            ordType = 'Market';
+                            ordType = 'Limit';
                             side = 'Sell';
                             if (currentQty < 0) {
                                 console.log('Ignore sell due to short position');
@@ -220,7 +220,7 @@ const orderProc = (bitMEXApi, ordType, symbol, side, personalPercentWallet) => {
                     let orderQty;
                     orderQty = Math.round(balance * bitMEXSettings['percentWallet']);
                     console.log('orderQty', walletAmount, price, bitMEXSettings['percentWallet'], orderQty);
-                    bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, ordType: ordType, side: side, text: strings.botOrderMark}, (result) => {
+                    bitMEXApi.order(POST, {symbol: symbol, orderQty: orderQty, price: price - 1, ordType: ordType, side: side, text: strings.botOrderMark}, (result) => {
                         console.log(ordType, walletAmount, price, bitMEXSettings['percentWallet'], orderQty, JSON.stringify(result));
 
                         // // orderQty = Math.round(balance * bitMEXSettings['percentTakeProfit']);
